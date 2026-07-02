@@ -1,0 +1,15 @@
+Introduction to Calculus
+
+Calculus is the mathematical study of continuous change. It has two major branches: differential calculus and integral calculus.
+
+Limits
+The concept of a limit is fundamental to calculus. A limit describes the value that a function approaches as the input approaches some value.
+
+Derivatives
+The derivative measures the instantaneous rate of change of a function. The power rule: d/dx(x^n) = nx^(n-1). The chain rule: d/dx(f(g(x))) = f'(g(x)) * g'(x).
+
+Integrals
+Integration is the reverse of differentiation. The Fundamental Theorem of Calculus: integral from a to b of f(x)dx = F(b) - F(a), where F is the antiderivative.
+
+Applications
+Velocity is the derivative of position. Acceleration is the derivative of velocity. Area under a curve is found using integration.

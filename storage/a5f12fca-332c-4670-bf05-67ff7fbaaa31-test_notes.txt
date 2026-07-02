@@ -1,0 +1,13 @@
+Neural Networks and Deep Learning Fundamentals
+
+A neural network is a computational model inspired by the human brain. It consists of interconnected nodes (neurons) organized in layers: an input layer, one or more hidden layers, and an output layer.
+
+Each connection between neurons has a weight that is adjusted during training. The network learns by minimizing a loss function using gradient descent and backpropagation.
+
+Backpropagation is the algorithm used to compute gradients of the loss with respect to each weight. It applies the chain rule of calculus layer by layer, propagating error signals backward from the output to the input.
+
+Activation functions introduce non-linearity. Common activations include ReLU (Rectified Linear Unit), sigmoid, and tanh. ReLU is defined as f(x) = max(0, x) and is the most popular choice for hidden layers.
+
+Gradient descent is an optimization algorithm that iteratively adjusts parameters in the direction of steepest descent of the loss. The learning rate controls step size. Variants include SGD, Adam, and RMSprop.
+
+Transformers are a neural network architecture based on self-attention mechanisms. They process input sequences in parallel rather than sequentially, enabling efficient training on large datasets. The attention mechanism computes weighted combinations of values based on query-key similarities.
