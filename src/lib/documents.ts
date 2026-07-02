@@ -11,6 +11,7 @@ import { extractPdfText } from "@/lib/parsers/pdf";
 import { extractDocxText } from "@/lib/parsers/docx";
 import { extractPptxText } from "@/lib/parsers/pptx";
 import fs from "fs/promises";
+import { put } from "@vercel/blob";
 import path from "path";
 import { randomUUID } from "crypto";
 
@@ -110,9 +111,14 @@ export async function ingestDocument(
   const title = file.name.replace(/\.[^.]+$/, "");
 
   // Store original bytes
-  const storedName = `${randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const storagePath = path.join(STORAGE_DIR, storedName);
-  await fs.writeFile(storagePath, file.buffer);
+  // Upload original file to Vercel Blob
+const storedName = `${randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+const blob = await put(storedName, file.buffer, {
+  access: "public",
+});
+
+const storagePath = blob.url;
 
   // Create the document row in processing state
   const doc = await db.document.create({
@@ -125,7 +131,7 @@ export async function ingestDocument(
       mimeType: file.type || "application/octet-stream",
       sizeBytes: file.size,
       contentText: "",
-      storagePath: `storage/${storedName}`,
+      storagePath,
       tags: opts.tags ? JSON.stringify(opts.tags) : null,
       status: "processing",
     },
