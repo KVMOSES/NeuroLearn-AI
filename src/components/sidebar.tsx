@@ -43,12 +43,12 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex shrink-0 sticky top-0 h-screen border-r bg-sidebar flex-col transition-all duration-300 z-30",
+        "hidden lg:flex shrink-0 sticky top-0 h-screen flex-col transition-all duration-300 z-30 glass-card bg-transparent",
         sidebarCollapsed ? "w-[64px]" : "w-[244px]"
       )}
     >
       {/* Brand */}
-      <div className="h-14 flex items-center gap-2.5 px-3.5 border-b shrink-0">
+      <div className="h-16 flex items-center gap-3 px-4 border-b glass p-3 shrink-0">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shrink-0 shadow-sm">
           <Brain className="w-4 h-4 text-white" />
         </div>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#f4f7fe]" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NeuroLearn Dashboard - Adaptive Learning</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- BEGIN: Custom Styling -->
+<style data-purpose="liquid-glassmorphism">
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --neon-cyan: #00f2ff;
+      --neon-magenta: #ff00e5;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, #f0f4ff 0%, #ffffff 50%, #f9f0ff 100%);
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .neon-border-cyan:hover {
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+      border-color: var(--neon-cyan);
+    }
+
+    .neon-border-magenta:hover {
+      box-shadow: 0 0 20px rgba(255, 0, 229, 0.2);
+      border-color: var(--neon-magenta);
+    }
+
+    .gradient-text-amazing {
+      background: linear-gradient(90deg, #ff00e5, #ff8c00, #00f2ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    .active-nav {
+      background: linear-gradient(90deg, #ff3399, #ff9966);
+      color: white !important;
+      box-shadow: 0 10px 15px -3px rgba(255, 51, 153, 0.3);
+    }
+
+    .hero-gradient {
+      background: radial-gradient(circle at 70% 50%, rgba(255, 0, 229, 0.1), transparent),
+                  radial-gradient(circle at 30% 80%, rgba(0, 242, 255, 0.1), transparent);
+    }
+  </style>
+<!-- END: Custom Styling -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'neuro-purple': '#8e44ad',
+            'neuro-blue': '#3498db',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full flex overflow-hidden">
+<svg aria-hidden="true" class="inline-defs-container" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<!-- BEGIN: Left Sidebar Navigation -->
+<aside class="h-full glass-card my-0 ml-0 mr-0 flex flex-col border-none bg-white/60 w-64 rounded-none border-r border-slate-100" data-purpose="main-sidebar">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<h1 class="font-bold text-slate-800 leading-tight">NeuroLearn</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Adaptive Learning</p>
+</div>
+</div>
+<div class="px-4 mb-4">
+<div class="relative">
+<input class="w-full bg-slate-100/50 border-none rounded-xl py-2 pl-9 text-sm focus:ring-2 focus:ring-purple-200" placeholder="Search anything..." type="text"/>
+<span class="absolute left-3 top-2.5 text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<span class="absolute right-3 top-2.5 text-[10px] text-slate-400 font-bold">⌘K</span>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-3 overflow-y-auto custom-scrollbar">
+<p class="text-[10px] font-bold text-slate-400 uppercase px-3 py-2">Study Space</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl active-nav transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">Home</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">Learn</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">AI Tutor</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">Lesson Studio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">Progress</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-sm font-medium">Flashcards</span>
+</a>
+</nav>
+<!-- Sidebar Footer -->
+<div class="p-4">
+<div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 relative group cursor-pointer hover:bg-white transition-all">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">KM</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-800 truncate">KEVIN MOSES</p>
+<p class="text-[10px] text-slate-500">Lvl 2 • Apprentice</p>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="flex justify-between items-center text-[11px] font-bold">
+<div class="flex items-center gap-1 text-purple-600">
+<svg class="w-3 h-3" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" fill-rule="evenodd"></path></svg>
+            140 XP
+          </div>
+<div class="flex items-center gap-1 text-orange-500">
+<svg class="w-3 h-3" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1014 0c0-1.032-.226-1.99-.614-2.854a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.367 31.367 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1014 0c0-1.032-.226-1.99-.614-2.854z" fill-rule="evenodd"></path></svg>
+            0 day streak
+          </div>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: Left Sidebar Navigation -->
+<!-- BEGIN: Main Dashboard Content -->
+<main class="flex-1 h-full overflow-y-auto custom-scrollbar space-y-12 pb-12 p-8" data-purpose="dashboard-main">
+<!-- Header Area -->
+<header class="flex items-center justify-between gap-8">
+<div class="flex-1">
+<p class="text-sm text-slate-500 font-medium">Good evening, KEVIN 👋</p>
+<h2 class="text-3xl font-bold text-slate-800 whitespace-nowrap">Ready to learn something <span class="relative inline-block"><span class="gradient-text-amazing">amazing</span><svg class="absolute -bottom-2 left-0 w-full h-2" preserveaspectratio="none" viewbox="0 0 100 10"><path d="M0 5 Q 25 0, 50 5 T 100 5" fill="none" stroke="url(#amazing_line_gradient_main)" stroke-linecap="round" stroke-width="3"></path><defs><lineargradient id="amazing_line_gradient_main" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="#ff00e5"></stop><stop offset="50%" stop-color="#ff8c00"></stop><stop offset="100%" stop-color="#00f2ff"></stop></lineargradient></defs></svg></span></h2>
+</div>
+<div class="flex items-center gap-8">
+<div class="relative">
+<input class="bg-white/80 border-none rounded-2xl px-4 py-2 text-sm shadow-sm w-64 focus:ring-2 focus:ring-blue-100" placeholder="Search anything..." type="text"/>
+<span class="absolute right-3 top-2.5 text-[10px] text-slate-400 font-bold">⌘K</span>
+</div>
+<div class="flex items-center gap-3 bg-white/80 p-1.5 rounded-2xl shadow-sm">
+<button class="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+<svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<div class="relative">
+<button class="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+<svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">3</span>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-white/80 p-2 rounded-2xl shadow-sm cursor-pointer hover:bg-white transition-all">
+<div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">KM</div>
+<div class="hidden xl:block">
+<p class="text-xs font-bold text-slate-800">KEVIN MOSES</p>
+<p class="text-[10px] text-slate-500">Lvl 2</p>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</header>
+<!-- Hero Section: Course Continuation -->
+<section class="glass-card p-1 relative overflow-hidden hero-gradient" data-purpose="hero-course-card"><div class="absolute inset-0 pointer-events-none overflow-hidden z-0"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-30"><div class="absolute top-10 left-1/4 w-64 h-64 bg-pink-500 blur-[100px] rounded-full animate-pulse"></div><div class="absolute bottom-10 right-1/4 w-80 h-80 bg-blue-500 blur-[120px] rounded-full"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-purple-500/20 blur-[80px] rounded-[100%] rotate-12"></div></div><svg class="absolute inset-0 w-full h-full opacity-20" viewbox="0 0 800 400" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="fluid-grad" x1="0%" x2="100%" y1="0%" y2="100%"><stop offset="0%" stop-color="#ff00e5" stop-opacity="0.5"></stop><stop offset="50%" stop-color="#8e44ad" stop-opacity="0.3"></stop><stop offset="100%" stop-color="#00f2ff" stop-opacity="0.5"></stop></lineargradient></defs><path class="blur-2xl" d="M-100,200 C100,100 300,350 500,200 C700,50 900,250 1000,150" fill="none" stroke="url(#fluid-grad)" stroke-linecap="round" stroke-width="80"></path><circle class="animate-pulse opacity-40 blur-sm" cx="20%" cy="30%" fill="#ff00e5" r="15"></circle><circle class="animate-pulse opacity-30 blur-md" cx="60%" cy="70%" fill="#00f2ff" r="25"></circle><circle class="opacity-60 blur-[2px]" cx="85%" cy="40%" fill="#ffffff" r="10"></circle></svg></div>
+<div class="w-full rounded-[23px] flex items-center p-12 relative z-10">
+<div class="w-1/2 space-y-6">
+<div class="flex items-center gap-3">
+<div class="p-3 bg-white/40 backdrop-blur rounded-2xl">
+<img alt="Course Icon" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVo3cKvHzks9upVCe2Vn5nl49tMeHsaAD0Ri5uJFVrSUaG_5WYK-bhngUJZjaokGPgTCTeMw_BqrUwbL0Mex9fqTZm4gWUSNpkUixQJ27QxazN06NuokCnippxVYdqksd2xiaTOaozkFiPK45jaANzdmN1GkPOn7GGcJdZkitCWRPq69Lax3kmYwlg3nChaHgjioxsnz9cjzuRv2qQowwWoFsro4-hyUvmCB54Hbk5R6pOi1a7om6N670U12-_Kkc7RPmESYtZrU8" style="object-position: 0 415px;"/>
+</div>
+<span class="text-slate-600 font-semibold text-sm">Continue your journey</span>
+</div>
+<h1 class="text-5xl font-black text-slate-800 tracking-tight">Master Chemistry <br/>Step by Step</h1>
+<div class="space-y-2 max-w-xs">
+<div class="flex justify-between text-sm font-bold text-slate-500">
+<span class="">45% Complete</span>
+</div>
+<div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-pink-500 to-orange-400 w-[45%]"></div>
+</div>
+</div>
+<button class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-pink-200 flex items-center gap-3 hover:scale-105 transition-transform">
+            Continue Learning
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Large Floating Lab Flask Placeholder -->
+<div class="w-1/2 h-full flex items-center justify-center relative min-h-[300px]">
+<div class="absolute inset-0 flex items-center justify-center opacity-40">
+<div class="w-64 h-64 bg-purple-300 blur-[80px] rounded-full"></div>
+<div class="w-64 h-64 bg-cyan-200 blur-[100px] rounded-full translate-x-20 -translate-y-10"></div>
+</div>
+<img alt="Laboratory Flask" class="w-full h-full max-h-[350px] object-contain mix-blend-multiply drop-shadow-2xl relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYm7wYgYN5N9SI674iQWOXNhE2qEMA8XVm5aXEqUcc0-m16CaAoQcOcvpTgB4jF7O2UzV6VmK3cuUDGWe71FrunJbxhVt-tVQP8PcZS4hjqxY-Mv4dOcaevYVBfnQ_FDSpZ7Ci_AvgP0kvcDCWH1MIy_wp3inilyx-XuRQ-LiVo5RI4GpkLRbRjDY5gJzjYis03rjIL87bFQA6yP0cwpe-ZVQ_x0uLbP3Ekq28p1QgWS5T3o4DooelT1u2fnkF9IDUVFY9ec0k_MY"/>
+</div>
+</div>
+<!-- Background wavy elements -->
+<div class="absolute top-0 right-0 w-full h-full pointer-events-none opacity-60 p-12">
+<svg class="w-full h-full" viewbox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+<path d="M0,200 C150,100 350,300 500,200 C650,100 800,200 800,200" fill="none" opacity="0.3" stroke="url(#paint0_linear)" stroke-linecap="round" stroke-width="60"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear" x1="0" x2="800" y1="200" y2="200">
+<stop stop-color="#FF00E5"></stop>
+<stop offset="1" stop-color="#00F2FF"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</section>
+<!-- Stats Grid -->
+<section class="grid grid-cols-4 gap-8" data-purpose="stats-grid">
+<!-- Study Streak -->
+<div class="glass-card p-6 neon-border-magenta cursor-pointer">
+<div class="flex items-center gap-2 mb-4">
+<img alt="Streak" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJhpaqlNePKUgb5yAGSJw2hOY_j1Ct1dTkVxl30UHGadwrpz2oXiDW0i30WX79aqJGn9a9SvJGL1ScCAyVXWIws7dBY5Arljy7jfeoVdsmzXTmo7a3NDhBPP82471wyypXHy8aJ5Anp8IlJuer8zfXCCIn0jB4whCHdWDoIYS_aVQx5AIWOJMK5ig5mNk_9VHQNu4aBjMd0kyFJ-wqDRjwUZ5g37Au8lAGs_uC6NuKiCTtddChv6bBLgY5td6bV7ZtyBxQ34yuzKk"/>
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Study Streak</h4>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<p class="text-3xl font-black text-slate-800">0 <span class="text-sm font-medium text-slate-400">days</span></p>
+<p class="text-xs text-slate-400 font-medium">Keep it going!</p>
+</div>
+<div class="h-10 w-24">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path d="M0 35 Q 25 35, 50 30 T 100 5" fill="none" stroke="#ff3399" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- XP Today -->
+<div class="glass-card p-6 neon-border-cyan cursor-pointer">
+<div class="flex items-center gap-2 mb-4">
+<img alt="XP" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXsdTePcwk2RRe6QDx1IOFRgQ8DnNWTk6Le8hl8nkTt21YrXWhXTTiLVxpyIhkXwRxbuaJPNUU8hrFIIOprD_EZGRj-ap6P9G4ygUJzGfTqBC54UMGh9sQ90tu7WLb82P-iXg9RW89ZllR_hBNENiOVfj0Z4rqiRMiSLYa39cUHHdOsry07eO7uSo1NgFG-_jsKIVEw17NXiJECaQVfcQhHZVpLPmBHwumvYGJJpQGl0Y35xY5AmeLEZ6DW74URRHuY4UKg4O_KEo"/>
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">XP Today</h4>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<p class="text-3xl font-black text-slate-800">140 <span class="text-sm font-medium text-slate-400">XP</span></p>
+<p class="text-xs text-green-500 font-bold">+20 from yesterday</p>
+</div>
+<div class="h-10 w-24">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path d="M0 38 Q 20 30, 40 35 T 70 25 T 100 10" fill="none" stroke="#3498db" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Level -->
+<div class="glass-card p-6 neon-border-cyan cursor-pointer">
+<div class="flex items-center gap-2 mb-4">
+<img alt="Level" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHQ5MigwxAHR3uBZBwGZO7-qQ9vT24zDUGIH2iVR2pdfcI-eRLxFPCqV8BOq7apgTrIufjYBQts9cMV6xpRuVvzrBvVJddAdJU3rc9UWXoVvSu8EAyC9mSvV9eTHW2kEFIyDq9DHfVxPPkr8i_HiMrg1M7vbCiSBiAJAf58B8bitalfZVolWIGVj0h1TrLa3Sw_zoAKzLLme9VBIiW_BgEncKRg8sPF1Ub96I7HgTmN7oVYpqJAvzCWiSO-fLUep1-SIgYJRlnV2I"/>
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Level</h4>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<p class="text-3xl font-black text-slate-800">2</p>
+<p class="text-xs text-slate-400 font-medium">Apprentice</p>
+</div>
+<div class="h-10 w-24">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path d="M0 35 L 20 35 L 40 32 L 60 30 L 80 25 L 100 15" fill="none" stroke="#2ecc71" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Badges -->
+<div class="glass-card p-6 neon-border-magenta cursor-pointer">
+<div class="flex items-center gap-2 mb-4">
+<img alt="Badges" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHQ5MigwxAHR3uBZBwGZO7-qQ9vT24zDUGIH2iVR2pdfcI-eRLxFPCqV8BOq7apgTrIufjYBQts9cMV6xpRuVvzrBvVJddAdJU3rc9UWXoVvSu8EAyC9mSvV9eTHW2kEFIyDq9DHfVxPPkr8i_HiMrg1M7vbCiSBiAJAf58B8bitalfZVolWIGVj0h1TrLa3Sw_zoAKzLLme9VBIiW_BgEncKRg8sPF1Ub96I7HgTmN7oVYpqJAvzCWiSO-fLUep1-SIgYJRlnV2I"/>
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Badges</h4>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<p class="text-3xl font-black text-slate-800">5 <span class="text-sm font-medium text-slate-400">Badges</span></p>
+<p class="text-xs text-slate-400 font-medium">Unlocked</p>
+</div>
+<div class="flex gap-1">
+<img class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVo3cKvHzks9upVCe2Vn5nl49tMeHsaAD0Ri5uJFVrSUaG_5WYK-bhngUJZjaokGPgTCTeMw_BqrUwbL0Mex9fqTZm4gWUSNpkUixQJ27QxazN06NuokCnippxVYdqksd2xiaTOaozkFiPK45jaANzdmN1GkPOn7GGcJdZkitCWRPq69Lax3kmYwlg3nChaHgjioxsnz9cjzuRv2qQowwWoFsro4-hyUvmCB54Hbk5R6pOi1a7om6N670U12-_Kkc7RPmESYtZrU8" style="object-position: -445px -715px;"/>
+<img class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVo3cKvHzks9upVCe2Vn5nl49tMeHsaAD0Ri5uJFVrSUaG_5WYK-bhngUJZjaokGPgTCTeMw_BqrUwbL0Mex9fqTZm4gWUSNpkUixQJ27QxazN06NuokCnippxVYdqksd2xiaTOaozkFiPK45jaANzdmN1GkPOn7GGcJdZkitCWRPq69Lax3kmYwlg3nChaHgjioxsnz9cjzuRv2qQowwWoFsro4-hyUvmCB54Hbk5R6pOi1a7om6N670U12-_Kkc7RPmESYtZrU8" style="object-position: -615px -715px;"/>
+<img class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVo3cKvHzks9upVCe2Vn5nl49tMeHsaAD0Ri5uJFVrSUaG_5WYK-bhngUJZjaokGPgTCTeMw_BqrUwbL0Mex9fqTZm4gWUSNpkUixQJ27QxazN06NuokCnippxVYdqksd2xiaTOaozkFiPK45jaANzdmN1GkPOn7GGcJdZkitCWRPq69Lax3kmYwlg3nChaHgjioxsnz9cjzuRv2qQowwWoFsro4-hyUvmCB54Hbk5R6pOi1a7om6N670U12-_Kkc7RPmESYtZrU8" style="object-position: -685px -715px;"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Today's Mission Section -->
+<section class="glass-card p-8" data-purpose="missions-list">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-500">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h3 class="text-xl font-extrabold text-slate-800">Today's Mission</h3>
+</div>
+<div class="text-slate-400 text-sm font-bold flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          65 min
+        </div>
+</div>
+<div class="space-y-6 gap-4">
+<!-- Mission Item 1 -->
+<div class="flex items-center gap-6 p-6 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-slate-100 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center shrink-0">
+<img class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiGmiRvOvTk5LegHWOJA2kdk2cryTHjMi3mUAVNawGIz6QvFBQRwghna8XEev-IzYVp0qCYdQCIKx2HoxWUPge5xSl6ZKmhWIxY93EIqQ5lPrY0Pp8x0AepLz3pnyMJRPdaUNobgMs2G2a8cooRvNtj_4G5K0unmyLN9kdqhBbsFHHwL9cQfg5hLxw4dYrguc-luHtVeutAjrzX2rIT78-P-UrJcId13OYDxScQtkcXndu2O1uZL41xAMM_djaOXBHpVSo-EWr8C8"/>
+</div>
+<div class="flex-1 min-w-0">
+<h5 class="font-bold text-slate-800">Introduction to Sensors</h5>
+<p class="text-sm text-slate-400 truncate">Defines what sensors are, their general principles of operation, and their importance across various scientific and industrial fields.</p>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold text-slate-400">10 min</span>
+<div class="p-2 rounded-xl bg-white shadow-sm group-hover:bg-pink-500 group-hover:text-white transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Mission Item 2 -->
+<div class="flex items-center gap-6 p-6 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-slate-100 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0">
+<img class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVo3cKvHzks9upVCe2Vn5nl49tMeHsaAD0Ri5uJFVrSUaG_5WYK-bhngUJZjaokGPgTCTeMw_BqrUwbL0Mex9fqTZm4gWUSNpkUixQJ27QxazN06NuokCnippxVYdqksd2xiaTOaozkFiPK45jaANzdmN1GkPOn7GGcJdZkitCWRPq69Lax3kmYwlg3nChaHgjioxsnz9cjzuRv2qQowwWoFsro4-hyUvmCB54Hbk5R6pOi1a7om6N670U12-_Kkc7RPmESYtZrU8" style="object-position: -300px -715px;"/>
+</div>
+<div class="flex-1 min-w-0">
+<h5 class="font-bold text-slate-800">Types of Corrosion</h5>
+<p class="text-sm text-slate-400 truncate">Classifies and describes different forms of corrosion that affect metallic materials, such as uniform, pitting, galvanic, and crevice corrosion.</p>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold text-slate-400">15 min</span>
+<div class="p-2 rounded-xl bg-white shadow-sm group-hover:bg-orange-500 group-hover:text-white transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Mission Item 3 -->
+<div class="flex items-center gap-6 p-6 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-slate-100 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
+<img class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsayrT8oHtjZxczTzDqmH7lMK5fS6WWFiX5elML1fOlKjKO7IIUbEuiZXldjUWY02gSrfraDo9f71X64t30x2zZtfOaMcFe0g45bgkUM_8L4k6JGkTo403TxbHv6Cgzn__WWXIKS68a3TpGwoIlwVuUyTeOoYcgO7KUdq9zqdNi72UcCsvvGxAbi01mMVm7jb_El2OCRazmImqyvc3JKV52yKlHfd79xKV0_sBp_94OIQjU59JKyJ_OZ90B5qEtLRWxWGRsu0JnUs"/>
+</div>
+<div class="flex-1 min-w-0">
+<h5 class="font-bold text-slate-800">Computational vs. Theoretical Chemistry</h5>
+<p class="text-sm text-slate-400 truncate">Explores the distinctions, methodologies, and applications of computational chemistry versus theoretical chemistry, emphasizing their roles in modern research.</p>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold text-slate-400">15 min</span>
+<div class="p-2 rounded-xl bg-white shadow-sm group-hover:bg-blue-500 group-hover:text-white transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Tip -->
+<div class="mt-8 p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl flex items-center gap-4 border border-pink-100">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 shadow-lg">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0T1843mHw4X1uhoyqqX9wnqD6hgTcDGlbxF7c5GWOvs42V3bmbB1ViwmUF02qCQaPBdbjHZpco-2ygSI2r-TS0Hp_lH6HPDfGyQbKsHMBmiBlCcdtFDqrNdqsGyTNMozKh5gSpEXKP5PfnX1U62aHatvBevbcNnO8P-pJoYCAteF8m53F8NbYWXr5VH0tBfpF1cm0XhQTPvTx0nqojejUuInY1kx5oTQR3NwCOlmV9cD3hWUfwYiPAEMtB8lK8TCIjY2tFRiF3jM"/>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-800">You're just getting started with "CHEMSEMIMP(1)".</p>
+<p class="text-xs text-slate-500">The first lessons are the most important.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- END: Main Dashboard Content -->
+<!-- BEGIN: Right Sidebar -->
+<aside class="w-80 h-full my-0 ml-0 mr-0 p-4 space-y-10 overflow-y-auto custom-scrollbar pb-8 bg-white/40 border-l border-slate-100" data-purpose="right-sidebar">
+<!-- AI Companion Widget -->
+<div class="glass-card p-6 bg-white/40 border-none relative overflow-hidden" data-purpose="ai-companion">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-2">
+<div class="p-1.5 bg-pink-100 rounded-lg text-pink-500">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" fill-rule="evenodd"></path></svg>
+</div>
+<h4 class="font-bold text-slate-800 text-sm">Your AI Companion</h4>
+</div>
+<button class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-40 h-40 relative">
+<div class="absolute inset-0 bg-blue-400 blur-[40px] opacity-20 rounded-full scale-75 animate-pulse"></div>
+<img alt="Nova Robot" class="w-full h-full object-contain relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjr2f1A8l-CyguPBSLi_EbsKTsvd-dZYn4XCGy1yV68tjzSLZjtWOT_FbrkezBOErH4uyuH4-3-CQa5aBl6i31cUsbzSDyNhQD7hO1nXPgfX66r0vYOfmMsABEgbd4XhpvpaKdp7FPvKb52Pcdu_HwFqoxnE0WgLtKqKBIdXbzvfS--SOF5z6BG9hi8cRnq77BZlunTZpBOL3pj4RVsTz1M1pXSenqr4XN-BWL4NXGqY6Golx-mXkSC3YQZq4gs0lsAcT3iqR1x2Y"/>
+</div>
+<div>
+<h5 class="text-xl font-black text-slate-800">Nova</h5>
+<div class="flex items-center justify-center gap-1.5 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-600">
+<svg class="w-2.5 h-2.5 mr-1" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" fill-rule="evenodd"></path></svg>
+               Energetic
+             </span>
+</div>
+</div>
+<p class="text-sm text-slate-500 px-4">Let's make this evening productive!</p>
+<button class="w-full bg-white border border-slate-200 py-3 rounded-2xl text-blue-600 font-bold text-sm shadow-sm hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+          Chat with Nova
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Backdrop decoration -->
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-cyan-200 blur-3xl opacity-20 pointer-events-none"></div>
+</div>
+<!-- Calendar Widget -->
+<div class="glass-card p-6" data-purpose="study-calendar">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-2">
+<svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<h4 class="font-bold text-slate-800 text-sm">Study Calendar</h4>
+</div>
+<button class="text-slate-400 hover:text-slate-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="flex justify-between items-center mb-4 text-xs font-bold text-slate-500">
+<button><svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<span class="">June 2026</span>
+<button><svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
+<div class="grid grid-cols-7 text-center gap-y-3">
+<!-- Day labels -->
+<span class="text-[10px] font-bold text-slate-300">S</span>
+<span class="text-[10px] font-bold text-slate-300">M</span>
+<span class="text-[10px] font-bold text-slate-300">T</span>
+<span class="text-[10px] font-bold text-slate-300">W</span>
+<span class="text-[10px] font-bold text-slate-300">T</span>
+<span class="text-[10px] font-bold text-slate-300">F</span>
+<span class="text-[10px] font-bold text-slate-300">S</span>
+<!-- Days -->
+<span class="text-xs font-medium text-slate-300">31</span>
+<span class="text-xs font-bold text-slate-800">1</span>
+<span class="text-xs font-bold text-slate-800">2</span>
+<span class="text-xs font-bold text-slate-800">3</span>
+<span class="text-xs font-bold text-slate-800">4</span>
+<span class="text-xs font-bold text-slate-800">5</span>
+<span class="text-xs font-bold text-slate-800">6</span>
+<span class="text-xs font-bold text-slate-800">7</span>
+<div class="flex justify-center items-center">
+<span class="text-xs font-bold text-white bg-purple-500 w-6 h-6 flex items-center justify-center rounded-full shadow-lg shadow-purple-200">8</span>
+</div>
+<span class="text-xs font-bold text-slate-800">9</span>
+<span class="text-xs font-bold text-slate-800">10</span>
+<span class="text-xs font-bold text-slate-800">11</span>
+<span class="text-xs font-bold text-slate-800">12</span>
+<span class="text-xs font-bold text-slate-800">13</span>
+<span class="text-xs font-bold text-slate-800">14</span>
+<span class="text-xs font-bold text-slate-800">15</span>
+<span class="text-xs font-bold text-slate-800">16</span>
+<span class="text-xs font-bold text-slate-800">17</span>
+<span class="text-xs font-bold text-slate-800">18</span>
+<span class="text-xs font-bold text-slate-800">19</span>
+<span class="text-xs font-bold text-slate-800">20</span>
+<!-- ... and so on -->
+</div>
+<div class="mt-6 pt-6 border-t border-slate-50 space-y-3">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-purple-500"></div>
+<div>
+<p class="text-xs font-bold text-slate-800">8 June 2026</p>
+<p class="text-[10px] text-blue-500 font-medium">You have 3 tasks planned today.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Learning Insights -->
+<div class="glass-card p-6 bg-white/60" data-purpose="learning-insights">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-2">
+<div class="p-1.5 bg-green-100 rounded-lg text-green-500">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h4 class="font-bold text-slate-800 text-sm">Learning Insights</h4>
+</div>
+<button class="text-slate-400 hover:text-slate-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="space-y-4">
+<div>
+<h5 class="text-sm font-bold text-slate-800">Your confidence is growing steadily.</h5>
+<p class="text-[10px] text-slate-500 mt-1">You're ready for harder challenges!</p>
+</div>
+<div class="h-32 w-full relative">
+<!-- Curved line chart representation -->
+<svg class="w-full h-full" viewbox="0 0 200 80">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#ff00e5" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#ff8c00" stop-opacity="0.8"></stop>
+</lineargradient>
+</defs>
+<path d="M10 70 Q 50 65, 90 55 T 140 30 T 190 10" fill="none" stroke="url(#chartGradient)" stroke-linecap="round" stroke-width="4"></path>
+<circle class="animate-pulse" cx="190" cy="10" fill="#ff8c00" r="5"></circle>
+<circle cx="190" cy="10" fill="#ff8c00" fill-opacity="0.2" r="8"></circle>
+</svg>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: Right Sidebar -->
+</body></html>

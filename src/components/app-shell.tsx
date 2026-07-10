@@ -66,7 +66,10 @@ export function AppShell() {
   if (!me) return null;
 
   return (
-    <div className="min-h-screen flex bg-background relative" style={{ backgroundImage: atmosphere.bgGradient }}>
+    <div className="min-h-screen flex bg-background relative overflow-hidden" style={{ backgroundImage: atmosphere.bgGradient }}>
+      <div className="gradient-mesh absolute inset-0 opacity-50 pointer-events-none" />
+      <div className="orb" style={{ width: 420, height: 420, left: -80, top: -60, background: "linear-gradient(180deg, rgba(123,97,255,0.18), rgba(255,144,123,0.12))" }} />
+      <div className="orb" style={{ width: 320, height: 320, right: -60, bottom: -80, background: "linear-gradient(180deg, rgba(96,255,176,0.12), rgba(123,97,255,0.12))" }} />
       {/* Stars at night */}
       {atmosphere.showStars && <StarField count={15} />}
       <Sidebar />
