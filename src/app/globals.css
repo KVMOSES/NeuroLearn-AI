@@ -577,3 +577,62 @@
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+
+  /* ====== NEW DASHBOARD MISSION ROW & CALENDAR HOVER ====== */
+  .mission-row {
+    transition: background-color 0.25s ease, transform 0.25s ease;
+    background: transparent;
+  }
+  .mission-row:hover {
+    background-color: color-mix(in oklch, var(--muted) 60%, transparent);
+    transform: translateX(2px);
+  }
+
+  .cal-day {
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+  .cal-day:not(.bg-primary):hover {
+    background-color: color-mix(in oklch, var(--muted) 70%, transparent);
+  }
+
+  /* Premium glow accents for StatCards */
+  .glow-pink:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 0 0 1.5px rgba(236,72,153,0.5),
+      0 0 30px rgba(236,72,153,0.35);
+    border-color: rgba(236,72,153,0.6);
+  }
+  .glow-blue:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 0 0 1.5px rgba(56,189,248,0.5),
+      0 0 30px rgba(56,189,248,0.35);
+    border-color: rgba(56,189,248,0.6);
+  }
+  .glow-green:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 0 0 1.5px rgba(34,197,94,0.5),
+      0 0 30px rgba(34,197,94,0.35);
+    border-color: rgba(34,197,94,0.6);
+  }
+  .glow-orange:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 0 0 1.5px rgba(251,146,60,0.5),
+      0 0 30px rgba(251,146,60,0.35);
+    border-color: rgba(251,146,60,0.6);
+  }
+
+  /* Glass card transform lift on hover */
+  .glass-card {
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+  }
+  .glass-card:hover {
+    transform: translateY(-2px);
+  }
