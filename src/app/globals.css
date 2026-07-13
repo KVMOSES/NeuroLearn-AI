@@ -37,11 +37,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 6px);
-  --radius-md: calc(var(--radius) - 3px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 6px);
-  --radius-2xl: calc(var(--radius) + 12px);
+  --radius-sm: calc(var(--radius) - 6px);   /* 8px */
+  --radius-md: calc(var(--radius) - 3px);   /* 11px */
+  --radius-lg: var(--radius);               /* 14px */
+  --radius-xl: calc(var(--radius) + 6px);   /* 20px — small cards */
+  --radius-2xl: calc(var(--radius) + 12px); /* 26px — standard cards */
+  --radius-hero: 32px;                       /* hero cards */
 }
 
 :root {
@@ -452,6 +453,7 @@
   /* Glass card — premium Apple VisionOS inspired */
   .glass-card {
     position: relative;
+    border-radius: var(--radius-2xl);
     background:
       radial-gradient(130% 100% at 12% 0%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 42%),
       linear-gradient(165deg, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0.42) 55%, rgba(255,255,255,0.6) 100%);
@@ -474,6 +476,16 @@
       inset 0 -14px 22px -18px rgba(255,255,255,0.65),
       0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
       0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  /* Hero card size */
+  .glass-hero {
+    border-radius: var(--radius-hero);
+  }
+
+  /* Small glass card */
+  .glass-card-sm {
+    border-radius: calc(var(--radius-2xl) - 4px);
   }
 
   /* Premium button press */
