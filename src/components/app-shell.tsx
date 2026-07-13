@@ -25,7 +25,7 @@ import { Loader2, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function AppShell() {
-  const { me, authLoading, loadMe, view, viewParams, commandOpen } = useAppStore();
+  const { me, authLoading, loadMe, view, viewParams, commandOpen, sidebarCollapsed } = useAppStore();
   const atmosphere = useAtmosphere();
 
   useEffect(() => {
@@ -73,6 +73,8 @@ export function AppShell() {
       {/* Stars at night */}
       {atmosphere.showStars && <StarField count={15} />}
       <Sidebar />
+      {/* Spacer for fixed sidebar */}
+      <div className="hidden lg:block shrink-0 transition-all duration-300" style={{ width: sidebarCollapsed ? '64px' : '244px' }} />
       <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <Topbar />
         <main className={`flex-1 overflow-x-hidden ${view === "tutor" ? "p-0" : "p-4 lg:p-6"} pb-20 lg:pb-6`}>

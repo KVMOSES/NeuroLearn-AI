@@ -43,12 +43,19 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex shrink-0 sticky top-0 h-screen flex-col transition-all duration-300 z-30 glass-card bg-transparent",
+        "hidden lg:flex shrink-0 fixed left-0 top-0 h-screen flex-col transition-all duration-300 z-30",
         sidebarCollapsed ? "w-[64px]" : "w-[244px]"
       )}
+      style={{
+        background: 'radial-gradient(130% 100% at 12% 0%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 42%), linear-gradient(165deg, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0.42) 55%, rgba(255,255,255,0.6) 100%)',
+        backdropFilter: 'blur(28px) saturate(200%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(200%)',
+        borderRight: '1px solid rgba(255,255,255,0.75)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), inset 0 0 0 1px rgba(255,255,255,0.22), 0 1px 2px rgba(15,23,42,0.03), 0 8px 32px -8px rgba(15,23,42,0.05)',
+      }}
     >
       {/* Brand */}
-      <div className="h-16 flex items-center gap-3 px-4 border-b glass p-3 shrink-0">
+      <div className="h-16 flex items-center gap-3 px-4 border-b shrink-0" style={{ borderColor: 'rgba(255,255,255,0.5)' }}>
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shrink-0 shadow-sm">
           <Brain className="w-4 h-4 text-white" />
         </div>

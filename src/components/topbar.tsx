@@ -39,7 +39,7 @@ export function Topbar() {
   }
 
   return (
-    <header className="sticky top-0 z-20 h-16 border-b glass bg-background/30 backdrop-blur-xl flex items-center gap-3 px-4 lg:px-6">
+    <header className="sticky top-0 z-20 h-16 flex items-center gap-3 px-4 lg:px-6 glass-card" style={{ borderRadius: 0, borderLeft: 'none', borderRight: 'none', borderTop: 'none' }}>
       <div className="min-w-0">
         <h1 className="text-[15px] font-semibold leading-tight tracking-tight truncate">{meta.title}</h1>
         <p className="text-[11px] text-muted-foreground leading-tight truncate">{meta.sub}</p>

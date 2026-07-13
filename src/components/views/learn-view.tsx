@@ -5,7 +5,7 @@ import {
   GraduationCap, FileText, Brain, Target, ChevronRight, ArrowLeft, Sparkles,
   Clock, CheckCircle2, Circle, PlayCircle, AlertCircle, Loader2, Plus,
   ListTree, Map, Zap, TrendingUp, BookOpen, Lightbulb, Rocket, Bot,
-  ListChecks, Layers, Timer,
+  ListChecks, Layers, Timer, MoreHorizontal, Pencil, Trash2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,10 +22,90 @@ import { LessonPlayer } from "@/components/teaching/lesson-player";
 import { CinematicProgress } from "@/components/celebration";
 import { relativeTime, DIFFICULTY_LABEL } from "@/lib/ui";
 
+// ============================================================
+// DOCUMENT CARD MENU — three-dot overflow with Rename / Delete
+// ============================================================
+function CardMenu({ material, onRename, onDelete }: {
+  material: MaterialSummary;
+  onRename: (id: string, currentTitle: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    function handleClick() { setOpen(false); }
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, [open]);
+
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        className="w-6 h-6 rounded-full bg-black/20 backdrop-blur flex items-center justify-center text-white/80 hover:bg-black/40 hover:text-white transition-all"
+        aria-label="Card menu"
+      >
+        <MoreHorizontal className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <div
+          className="absolute top-8 right-0 min-w-[130px] rounded-xl overflow-hidden shadow-xl border z-50"
+          style={{
+            background: 'radial-gradient(130% 100% at 12% 0%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0) 42%), linear-gradient(165deg, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.6) 55%, rgba(255,255,255,0.7) 100%)',
+            backdropFilter: 'blur(28px) saturate(200%)',
+            borderColor: 'rgba(255,255,255,0.75)',
+          }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onRename(material.id, material.title); }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted/60 transition-colors text-left"
+          >
+            <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+            Rename
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(material.id); }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-left"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 type Stage = "materials" | "topics" | "diagnostic" | "lesson";
 
 export function LearnView() {
   const { viewParams, setView } = useAppStore();
+  const [renaming, setRenaming] = useState<{ id: string; title: string } | null>(null);
+
+  async function handleRename(id: string, currentTitle: string) {
+    const newTitle = window.prompt("Rename material:", currentTitle);
+    if (!newTitle || newTitle.trim() === "" || newTitle === currentTitle) return;
+    try {
+      await api.put(`/api/documents/${id}`, { title: newTitle.trim() });
+      toast.success("Renamed successfully");
+      loadMaterials();
+    } catch (err) {
+      toast.error((err as Error).message || "Rename failed");
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!window.confirm("Delete this material and all its lessons?")) return;
+    try {
+      await api.delete(`/api/documents/${id}`);
+      toast.success("Deleted successfully");
+      loadMaterials();
+    } catch (err) {
+      toast.error((err as Error).message || "Delete failed");
+    }
+  }
   const [stage, setStage] = useState<Stage>("materials");
   const [materials, setMaterials] = useState<MaterialSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -221,6 +301,10 @@ export function LearnView() {
                       <Badge className="bg-white/20 text-white hover:bg-white/20 backdrop-blur border-white/20 text-[9px] uppercase">
                         {mat.sourceType}
                       </Badge>
+                    </div>
+                    {/* Three-dot menu */}
+                    <div className="absolute top-2.5" style={{ right: 'calc(2.5rem + 8px)' }}>
+                      <CardMenu material={mat} onRename={handleRename} onDelete={handleDelete} />
                     </div>
                     {/* Progress ring (if learning) */}
                     {mat.analyzed && mat.planStatus && (

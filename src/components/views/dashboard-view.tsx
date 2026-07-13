@@ -135,13 +135,14 @@ function NovaAvatar() {
 /* ---------------------------------------------------------------------- */
 /* Stat card                                                              */
 /* ---------------------------------------------------------------------- */
-function StatCard({ glow, label, value, unit, sub, chartColor, trend }: {
-  glow: string; label: string; value: string; unit?: string; sub: string;
+function StatCard({ glow, label, icon, value, unit, sub, chartColor, trend }: {
+  glow: string; label: string; icon: string; value: string; unit?: string; sub: string;
   chartColor: string; trend: number[];
 }) {
   return (
     <div className={`glass-card rounded-2xl p-5 ${glow}`}>
       <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg shrink-0">{icon}</span>
         <span className="text-xs font-medium text-muted-foreground truncate">{label}</span>
       </div>
       <div className="flex items-end gap-1 mb-1">
@@ -171,7 +172,7 @@ function BadgesCard({ count }: { count: number }) {
       </div>
       <p className="text-xs text-muted-foreground mb-3">Unlocked</p>
       <div className="flex gap-1 text-lg">
-        {count > 0 ? "🏆⭐🔥" : "—"}
+        {count > 0 ? "🏅" : "—"}
       </div>
     </div>
   );
@@ -436,6 +437,7 @@ export function DashboardView() {
     {
       glow: "glow-pink",
       label: "Study Streak",
+      icon: "🔥",
       value: String(mission.streak.current),
       unit: "days",
       sub: mission.streak.current > 0 ? "Keep it going!" : "Start your streak today!",
@@ -445,6 +447,7 @@ export function DashboardView() {
     {
       glow: "glow-blue",
       label: "XP Today",
+      icon: "⚡",
       value: String(mission.xpEarnedToday),
       unit: "XP",
       sub: `${mission.xpTarget - mission.xpEarnedToday > 0 ? `${mission.xpTarget - mission.xpEarnedToday} XP to go` : "Daily goal met! 🎉"}`,
@@ -454,6 +457,7 @@ export function DashboardView() {
     {
       glow: "glow-green",
       label: "Level",
+      icon: "🏆",
       value: String(mission.level),
       sub: levelTitle(mission.level),
       chartColor: "#22C55E",
@@ -511,25 +515,6 @@ export function DashboardView() {
               <Bot size={15} className="shrink-0" />
               <span className="flex-1 truncate">Chat with {comp.name}</span>
             </button>
-            <button className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 hover:scale-105 transition-all shrink-0">
-              <Sun size={17} />
-            </button>
-            <button className="relative w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground glass-card hover:bg-white/80 transition-colors shrink-0">
-              <Bell size={17} />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-background">
-                3
-              </span>
-            </button>
-            <div className="flex items-center gap-2 rounded-full pl-1 pr-3 py-1 glass-card shrink-0">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-xs font-bold">
-                {me.user.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase()}
-              </div>
-              <div className="text-left hidden sm:block">
-                <p className="text-xs font-semibold text-foreground leading-tight">{me.user.name}</p>
-                <p className="text-xs text-muted-foreground leading-tight">Lvl {mission.level}</p>
-              </div>
-              <ChevronDown size={13} className="text-muted-foreground" />
-            </div>
           </div>
         </div>
       </motion.div>
