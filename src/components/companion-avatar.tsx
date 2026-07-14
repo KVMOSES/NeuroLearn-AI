@@ -1,13 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { COMPANION_AVATAR_SRC } from "@/lib/companion-assets";
-import { useState } from "react";
+import { AICompanion } from "@/components/ai-companion";
 
 interface CompanionAvatarProps {
-  icon: string;
-  gradient: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  icon?: string;
+  gradient?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   state?: "idle" | "wave" | "celebrate" | "think";
   className?: string;
 }
@@ -17,23 +16,15 @@ const SIZES = {
   md: "w-10 h-10",
   lg: "w-14 h-14",
   xl: "w-20 h-20",
-};
-
-const FALLBACK_TEXT = {
-  sm: "text-sm",
-  md: "text-base",
-  lg: "text-xl",
-  xl: "text-3xl",
+  "2xl": "w-[8.5rem] h-[8.5rem]",
 };
 
 /**
  * Animated AI Companion avatar.
- * Renders the shared 3D mascot with blue/purple ambient glow,
- * circular crop, and idle / wave / celebrate states.
+ * Renders the premium 3D glassmorphism companion with an ambient glow and a
+ * gentle floating animation. The mascot itself is the AICompanion SVG.
  */
 export function CompanionAvatar({
-  icon,
-  gradient,
   size = "md",
   state = "idle",
   className = "",
@@ -46,7 +37,7 @@ export function CompanionAvatar({
 
   return (
     <div className={`relative ${SIZES[size]} ${className}`}>
-      {/* Ambient glow — sits outside the image, never behind the PNG */}
+      {/* Ambient glow — sits outside the image, never behind the mascot */}
       <div className="absolute -inset-[18%] rounded-full companion-avatar-glow pointer-events-none" aria-hidden />
 
       {/* Circular container — fully transparent; only clips shape */}
@@ -56,41 +47,8 @@ export function CompanionAvatar({
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
       >
-        <CompanionAvatarImage icon={icon} size={size} gradient={gradient} />
+        <AICompanion size={size} />
       </motion.div>
     </div>
-  );
-}
-
-function CompanionAvatarImage({
-  icon,
-  size,
-  gradient,
-}: {
-  icon: string;
-  size: keyof typeof SIZES;
-  gradient: string;
-}) {
-  const [failed, setFailed] = useState(false);
-
-  if (failed) {
-    return (
-      <div
-        className={`w-full h-full rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center`}
-      >
-        <span className={`${FALLBACK_TEXT[size]} drop-shadow-sm`}>{icon}</span>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={COMPANION_AVATAR_SRC}
-      alt="AI Companion"
-      className="w-full h-full object-contain object-center select-none bg-transparent"
-      style={{ background: "transparent" }}
-      draggable={false}
-      onError={() => setFailed(true)}
-    />
   );
 }

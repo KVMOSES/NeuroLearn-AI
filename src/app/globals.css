@@ -387,21 +387,63 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Companion avatar — blue/purple ambient glow */
+  /* Companion avatar — soft radial glow behind the mascot */
   .companion-avatar-glow {
     background: radial-gradient(
-      circle,
-      rgba(147, 197, 253, 0.5) 0%,
-      rgba(196, 181, 253, 0.35) 40%,
-      rgba(167, 139, 250, 0.15) 65%,
-      transparent 75%
+      circle at 50% 52%,
+      rgba(147, 197, 253, 0.45) 0%,
+      rgba(167, 139, 250, 0.28) 32%,
+      rgba(196, 181, 253, 0.1) 55%,
+      transparent 72%
+    );
+    filter: blur(10px);
+    animation: companionGlowPulse 4s ease-in-out infinite;
+  }
+  .companion-avatar-glow-featured {
+    background: radial-gradient(
+      circle at 50% 48%,
+      rgba(147, 197, 253, 0.38) 0%,
+      rgba(129, 140, 248, 0.22) 26%,
+      rgba(167, 139, 250, 0.1) 42%,
+      transparent 56%
     );
     filter: blur(8px);
-    animation: companionGlowPulse 4s ease-in-out infinite;
+    animation: companionGlowPulseFeatured 5s ease-in-out infinite;
+  }
+  .companion-avatar-radial-featured {
+    background: radial-gradient(
+      circle at 50% 46%,
+      rgba(99, 102, 241, 0.14) 0%,
+      rgba(139, 92, 246, 0.09) 38%,
+      rgba(167, 139, 250, 0.04) 52%,
+      transparent 62%
+    );
+  }
+  .companion-avatar-img {
+    filter: drop-shadow(0 6px 14px rgba(99, 102, 241, 0.12))
+      drop-shadow(0 2px 6px rgba(15, 23, 42, 0.08));
+  }
+  .companion-avatar-img-featured {
+    filter: drop-shadow(0 5px 12px rgba(99, 102, 241, 0.1))
+      drop-shadow(0 2px 5px rgba(15, 23, 42, 0.07));
   }
   @keyframes companionGlowPulse {
     0%, 100% { opacity: 0.65; transform: scale(1); }
     50% { opacity: 0.9; transform: scale(1.06); }
+  }
+  @keyframes companionGlowPulseFeatured {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.68; transform: scale(1.03); }
+  }
+
+  /* Featured idle — float + gentle breathing */
+  .companion-idle-featured {
+    animation: companionIdleFeatured 4.5s ease-in-out infinite;
+  }
+  @keyframes companionIdleFeatured {
+    0%, 100% { transform: translateY(0) scale(1); }
+    35% { transform: translateY(-5px) scale(1.012); }
+    65% { transform: translateY(-3px) scale(1.006); }
   }
 
   /* Companion idle — gentle floating */

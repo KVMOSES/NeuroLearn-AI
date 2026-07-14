@@ -177,11 +177,13 @@ function BlobMascot() {
 /* ---------------------------------------------------------------------- */
 function NovaAvatar() {
   return (
-    <div className="relative w-28 h-28 flex items-center justify-center">
-      <div className="absolute inset-0 rounded-full bg-sky-300 opacity-30 blur-2xl animate-pulse pointer-events-none" aria-hidden />
-      <div className="relative w-28 h-28 rounded-full flex items-center justify-center bg-transparent">
-        <CompanionAvatar icon="🌟" gradient="from-amber-500 to-orange-500" size="xl" state="idle" />
-      </div>
+    <div className="-translate-y-[9px] -mb-1.5">
+      <CompanionAvatar
+        icon="🌟"
+        gradient="from-amber-500 to-orange-500"
+        size="2xl"
+        state="idle"
+      />
     </div>
   );
 }
@@ -996,16 +998,16 @@ export function DashboardView() {
             </div>
             <div className="relative flex flex-col items-center text-center py-1">
               <NovaAvatar />
-              <p className="font-semibold text-foreground mt-3">{comp.name}</p>
+              <p className="font-semibold text-foreground mt-1.5">{comp.name}</p>
               <p className="flex items-center gap-1 text-xs text-amber-500 font-medium mt-0.5">
                 <Zap size={11} /> Energetic
               </p>
               <p className="text-xs text-muted-foreground mt-3 italic">"{companionGreeting}"</p>
               <button
                 onClick={() => setView("tutor")}
-                className="mt-4 w-full flex items-center justify-center gap-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-sm font-semibold py-2.5 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:scale-105 transition-all"
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-violet-600 text-white text-sm font-semibold py-2.5 rounded-full shadow-sm hover:bg-violet-700 hover:shadow-md hover:scale-105 transition-all dark:bg-violet-500 dark:text-white dark:hover:bg-violet-400"
               >
-                Chat with {comp.name} <ArrowRight size={14} />
+                Chat with {comp.name} <ArrowRight size={14} className="text-white" />
               </button>
             </div>
           </div>
