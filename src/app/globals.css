@@ -387,6 +387,23 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Companion avatar — blue/purple ambient glow */
+  .companion-avatar-glow {
+    background: radial-gradient(
+      circle,
+      rgba(147, 197, 253, 0.5) 0%,
+      rgba(196, 181, 253, 0.35) 40%,
+      rgba(167, 139, 250, 0.15) 65%,
+      transparent 75%
+    );
+    filter: blur(8px);
+    animation: companionGlowPulse 4s ease-in-out infinite;
+  }
+  @keyframes companionGlowPulse {
+    0%, 100% { opacity: 0.65; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.06); }
+  }
+
   /* Companion idle — gentle floating */
   .companion-idle {
     animation: companionIdle 3s ease-in-out infinite;

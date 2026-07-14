@@ -18,6 +18,7 @@ import { useAppStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
 import { levelTitle, relativeTime } from "@/lib/ui";
 import { toast } from "sonner";
+import { CompanionAvatar } from "@/components/companion-avatar";
 import { api } from "@/lib/api-client";
 import { motion } from "framer-motion";
 import {
@@ -352,9 +353,7 @@ function CompanionSelector() {
           }`}
         >
           <div className="flex items-center gap-2 mb-1.5">
-            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${c.gradient} flex items-center justify-center`}>
-              <span className="text-sm">{c.icon}</span>
-            </div>
+            <CompanionAvatar icon={c.icon} gradient={c.gradient} size="sm" />
             <div>
               <p className="text-xs font-semibold">{c.name}</p>
               <p className="text-[9px] text-muted-foreground">{c.title}</p>

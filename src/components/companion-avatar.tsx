@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { COMPANION_AVATAR_SRC } from "@/lib/companion-assets";
+import { useState } from "react";
 
 interface CompanionAvatarProps {
   icon: string;
@@ -12,15 +13,23 @@ interface CompanionAvatarProps {
 }
 
 const SIZES = {
-  sm: "w-8 h-8 text-base",
-  md: "w-10 h-10 text-lg",
-  lg: "w-14 h-14 text-2xl",
-  xl: "w-20 h-20 text-4xl",
+  sm: "w-8 h-8",
+  md: "w-10 h-10",
+  lg: "w-14 h-14",
+  xl: "w-20 h-20",
+};
+
+const FALLBACK_TEXT = {
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-xl",
+  xl: "text-3xl",
 };
 
 /**
  * Animated AI Companion avatar.
- * Shows idle floating, wave greeting, celebrate bounce, or think state.
+ * Renders the shared 3D mascot with blue/purple ambient glow,
+ * circular crop, and idle / wave / celebrate states.
  */
 export function CompanionAvatar({
   icon,
@@ -29,7 +38,6 @@ export function CompanionAvatar({
   state = "idle",
   className = "",
 }: CompanionAvatarProps) {
-  // Derive the display state from props directly
   const stateClass =
     state === "idle" ? "companion-idle" :
     state === "wave" ? "companion-wave" :
@@ -38,47 +46,51 @@ export function CompanionAvatar({
 
   return (
     <div className={`relative ${SIZES[size]} ${className}`}>
-      {/* Glow ring */}
-      <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${gradient} opacity-20 blur-md`} />
-      {/* Avatar */}
+      {/* Ambient glow — sits outside the image, never behind the PNG */}
+      <div className="absolute -inset-[18%] rounded-full companion-avatar-glow pointer-events-none" aria-hidden />
+
+      {/* Circular container — fully transparent; only clips shape */}
       <motion.div
-        className={`relative w-full h-full rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-soft-lg ${stateClass}`}
+        className={`relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-transparent ${stateClass}`}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
       >
-        {/* Prefer the project's chatbot image when available, fall back to the emoji icon */}
-        <AvatarImage icon={icon} />
-        {/* Subtle shine */}
-        <div className="absolute top-1 left-1 w-1/3 h-1/3 rounded-full bg-white/20 blur-[2px]" />
+        <CompanionAvatarImage icon={icon} size={size} gradient={gradient} />
       </motion.div>
     </div>
   );
 }
 
-function AvatarImage({ icon }: { icon: string }) {
-  const CHATBOT_SRC = "/images/chatbot.png";
-  const [imgOk, setImgOk] = useState<boolean | null>(null);
+function CompanionAvatarImage({
+  icon,
+  size,
+  gradient,
+}: {
+  icon: string;
+  size: keyof typeof SIZES;
+  gradient: string;
+}) {
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    const img = new Image();
-    img.src = CHATBOT_SRC;
-    img.onload = () => { if (mounted) setImgOk(true); };
-    img.onerror = () => { if (mounted) setImgOk(false); };
-    return () => { mounted = false; };
-  }, []);
-
-  if (imgOk === null) {
-    // still checking — render the fallback icon to avoid layout shift
-    return <span className="drop-shadow-sm">{icon}</span>;
-  }
-
-  if (imgOk === false) {
-    return <span className="drop-shadow-sm">{icon}</span>;
+  if (failed) {
+    return (
+      <div
+        className={`w-full h-full rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center`}
+      >
+        <span className={`${FALLBACK_TEXT[size]} drop-shadow-sm`}>{icon}</span>
+      </div>
+    );
   }
 
   return (
-    <img src={CHATBOT_SRC} alt="chatbot" className="w-full h-full object-cover rounded-full drop-shadow-sm" />
+    <img
+      src={COMPANION_AVATAR_SRC}
+      alt="AI Companion"
+      className="w-full h-full object-contain object-center select-none bg-transparent"
+      style={{ background: "transparent" }}
+      draggable={false}
+      onError={() => setFailed(true)}
+    />
   );
 }

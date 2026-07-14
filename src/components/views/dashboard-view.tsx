@@ -178,11 +178,8 @@ function BlobMascot() {
 function NovaAvatar() {
   return (
     <div className="relative w-28 h-28 flex items-center justify-center">
-      <div className="absolute inset-0 rounded-full bg-sky-300 opacity-30 blur-2xl animate-pulse" />
-      <div
-        className="relative w-28 h-28 rounded-full flex items-center justify-center"
-        style={{ background: 'radial-gradient(circle at 32% 30%, #EDE9FE, #DBEAFE)' }}
-      >
+      <div className="absolute inset-0 rounded-full bg-sky-300 opacity-30 blur-2xl animate-pulse pointer-events-none" aria-hidden />
+      <div className="relative w-28 h-28 rounded-full flex items-center justify-center bg-transparent">
         <CompanionAvatar icon="🌟" gradient="from-amber-500 to-orange-500" size="xl" state="idle" />
       </div>
     </div>

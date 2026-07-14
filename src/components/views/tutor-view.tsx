@@ -281,8 +281,8 @@ export function TutorView() {
               className="relative press"
               title={companion ? `${companion.name} — ${companion.title}` : "NeuroTutor"}
             >
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-soft companion-idle`}>
-                <CompanionAvatar icon={companion?.icon ?? '🤖'} gradient={companion?.gradient ?? 'from-primary to-primary'} size="md" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-transparent">
+                <CompanionAvatar icon={companion?.icon ?? '🤖'} gradient={companion?.gradient ?? 'from-primary to-primary'} size="md" state="idle" />
               </div>
             </button>
             <div>
@@ -329,8 +329,8 @@ export function TutorView() {
                     onClick={() => changeCompanion(c.key)}
                     className={`w-full flex items-start gap-2.5 p-2 rounded-lg text-left transition-colors ${companion?.key === c.key ? "bg-accent" : "hover:bg-muted/60"}`}
                   >
-                    <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${c.gradient} flex items-center justify-center shrink-0`}>
-                      <span className="text-base">{c.icon}</span>
+                    <div className="shrink-0">
+                      <CompanionAvatar icon={c.icon} gradient={c.gradient} size="sm" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold">{c.name} <span className="text-muted-foreground font-normal">— {c.title}</span></p>
@@ -386,7 +386,7 @@ export function TutorView() {
                   >
                     {/* Companion avatar for assistant messages */}
                     {msg.role === "assistant" ? (
-                      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 shadow-soft`}>
+                      <div className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 bg-transparent">
                         <CompanionAvatar icon={companion?.icon ?? '🤖'} gradient={companion?.gradient ?? 'from-primary to-primary'} size="sm" />
                       </div>
                     ) : (
@@ -506,9 +506,13 @@ function EmptyTutorState({ profile, hasDocs, onAction, onViewDocs, companion }: 
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
         className="mb-5"
       >
-        <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${companion?.gradient ?? "from-primary to-primary"} flex items-center justify-center mx-auto shadow-soft-lg companion-idle`}>
-          <span className="text-4xl">{companion?.icon ?? "🤖"}</span>
-        </div>
+        <CompanionAvatar
+          icon={companion?.icon ?? "🤖"}
+          gradient={companion?.gradient ?? "from-primary to-primary"}
+          size="xl"
+          state="idle"
+          className="mx-auto"
+        />
       </motion.div>
 
       <h2 className="text-xl font-bold tracking-tight">{companion?.name ?? "NeuroTutor"}</h2>
