@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { CompanionAvatar } from "@/components/companion-avatar";
 import { api, streamSSE } from "@/lib/api-client";
 import type { ChatMessage, ConversationSummary, Citation, DocSummary, LearnerProfileDTO } from "@/lib/types";
 import { LoadingState } from "@/components/empty-states";
@@ -280,8 +281,8 @@ export function TutorView() {
               className="relative press"
               title={companion ? `${companion.name} — ${companion.title}` : "NeuroTutor"}
             >
-              <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${companion?.gradient ?? "from-primary to-primary"} flex items-center justify-center shadow-soft companion-idle`}>
-                <span className="text-base">{companion?.icon ?? "🤖"}</span>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-soft companion-idle`}>
+                <CompanionAvatar icon={companion?.icon ?? '🤖'} gradient={companion?.gradient ?? 'from-primary to-primary'} size="md" />
               </div>
             </button>
             <div>
@@ -385,8 +386,8 @@ export function TutorView() {
                   >
                     {/* Companion avatar for assistant messages */}
                     {msg.role === "assistant" ? (
-                      <div className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${companion?.gradient ?? "from-primary to-primary"} flex items-center justify-center shrink-0 shadow-soft`}>
-                        <span className="text-base">{companion?.icon ?? "🤖"}</span>
+                      <div className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 shadow-soft`}>
+                        <CompanionAvatar icon={companion?.icon ?? '🤖'} gradient={companion?.gradient ?? 'from-primary to-primary'} size="sm" />
                       </div>
                     ) : (
                       <div className="w-9 h-9 rounded-2xl bg-emerald-500/15 flex items-center justify-center shrink-0">
@@ -580,3 +581,5 @@ function CitationList({ citations }: { citations: Citation[] }) {
     </div>
   );
 }
+
+

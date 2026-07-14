@@ -6,7 +6,7 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { ok, ApiError } from "@/lib/api";
-import { readDocumentBytes } from "@/lib/documents";
+import { readDocumentBytes, deleteDocumentBytes } from "@/lib/documents";
 import fs from "fs/promises";
 import path from "path";
 import { z } from "zod";
@@ -95,13 +95,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!doc) return ApiError.NotFound("Document");
 
   // remove stored bytes
-  if (doc.storagePath) {
-    try {
-      await fs.unlink(path.join(process.cwd(), doc.storagePath));
-    } catch {
-      // ignore missing file
-    }
-  }
+  await deleteDocumentBytes(doc.storagePath);
   await db.document.delete({ where: { id } });
   return ok({ deleted: true });
 }

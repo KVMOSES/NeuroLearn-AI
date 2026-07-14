@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 interface CompanionAvatarProps {
   icon: string;
@@ -46,10 +47,38 @@ export function CompanionAvatar({
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
       >
-        <span className="drop-shadow-sm">{icon}</span>
+        {/* Prefer the project's chatbot image when available, fall back to the emoji icon */}
+        <AvatarImage icon={icon} />
         {/* Subtle shine */}
         <div className="absolute top-1 left-1 w-1/3 h-1/3 rounded-full bg-white/20 blur-[2px]" />
       </motion.div>
     </div>
+  );
+}
+
+function AvatarImage({ icon }: { icon: string }) {
+  const CHATBOT_SRC = "/images/chatbot.png";
+  const [imgOk, setImgOk] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const img = new Image();
+    img.src = CHATBOT_SRC;
+    img.onload = () => { if (mounted) setImgOk(true); };
+    img.onerror = () => { if (mounted) setImgOk(false); };
+    return () => { mounted = false; };
+  }, []);
+
+  if (imgOk === null) {
+    // still checking — render the fallback icon to avoid layout shift
+    return <span className="drop-shadow-sm">{icon}</span>;
+  }
+
+  if (imgOk === false) {
+    return <span className="drop-shadow-sm">{icon}</span>;
+  }
+
+  return (
+    <img src={CHATBOT_SRC} alt="chatbot" className="w-full h-full object-cover rounded-full drop-shadow-sm" />
   );
 }

@@ -62,32 +62,89 @@ function Sparkline({ color, values, id }: { color: string; values: number[]; id:
 }
 
 /* ---------------------------------------------------------------------- */
-/* Flask illustration for hero                                            */
+/* Glowing 3D Light Bulb illustration for hero                            */
 /* ---------------------------------------------------------------------- */
-function FlaskIllustration() {
+function LightBulbIllustration() {
   return (
     <svg width="170" height="170" viewBox="0 0 170 170" fill="none" className="shrink-0 relative z-10">
-      <circle cx="138" cy="34" r="6" fill="#F0ABFC" opacity="0.6" />
-      <circle cx="148" cy="80" r="4" fill="#C4B5FD" opacity="0.6" />
-      <circle cx="24" cy="56" r="5" fill="#93C5FD" opacity="0.55" />
-      <circle cx="18" cy="100" r="3" fill="#F9A8D4" opacity="0.6" />
-      <rect x="68" y="18" width="34" height="12" rx="4" fill="#EDE9FE" />
+      {/* Glow aura */}
+      <circle cx="85" cy="75" r="60" fill="#FBBF24" opacity="0.12" className="animate-pulse" />
+      <circle cx="85" cy="75" r="45" fill="#FCD34D" opacity="0.08" className="animate-pulse" style={{ animationDelay: "0.5s" }} />
+      {/* Floating sparkles */}
+      <circle cx="140" cy="30" r="5" fill="#FDE68A" opacity="0.7" />
+      <circle cx="150" cy="75" r="3.5" fill="#FEF3C7" opacity="0.5" />
+      <circle cx="22" cy="55" r="4.5" fill="#FDE68A" opacity="0.6" />
+      <circle cx="16" cy="100" r="3" fill="#FEF3C7" opacity="0.5" />
+      <circle cx="130" cy="120" r="3" fill="#FDE68A" opacity="0.4" />
+      {/* Light bulb glass dome */}
       <path
-        d="M72 30 H98 V62 L124 118 A12 12 0 0 1 113 135 H57 A12 12 0 0 1 46 118 L72 62 Z"
-        fill="white"
-        stroke="#E9D5FF"
+        d="M60 65 C60 38 78 22 85 22 C92 22 110 38 110 65 C110 82 102 92 98 98 C96 101 95 104 95 108 L75 108 C75 104 74 101 72 98 C68 92 60 82 60 65Z"
+        fill="url(#bulbGlass)"
+        stroke="url(#bulbStroke)"
+        strokeWidth="2"
+      />
+      {/* Inner glow */}
+      <path
+        d="M65 65 C65 42 79 28 85 28 C91 28 105 42 105 65 C105 80 98 89 94 95 C92 98 91 101 91 105 L79 105 C79 101 78 98 76 95 C72 89 65 80 65 65Z"
+        fill="url(#bulbInnerGlow)"
+        opacity="0.4"
+      />
+      {/* Filament */}
+      <path
+        d="M80 75 L78 50 L82 48 L85 60 L88 48 L92 50 L90 75"
+        stroke="url(#filamentGrad)"
         strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        className="animate-pulse"
+        style={{ animationDuration: "3s" }}
       />
-      <path
-        d="M57 96 L46 118 A12 12 0 0 0 57 135 H113 A12 12 0 0 0 124 118 L113 96 Z"
-        fill="url(#flaskLiquid)"
-      />
-      <circle cx="85" cy="112" r="3" fill="white" opacity="0.6" />
-      <circle cx="95" cy="122" r="2" fill="white" opacity="0.5" />
+      {/* Filament glow */}
+      <line x1="80" y1="72" x2="90" y2="72" stroke="#FEF08A" strokeWidth="8" opacity="0.3" strokeLinecap="round" className="animate-pulse" style={{ animationDuration: "2s" }} />
+      {/* Base / screw */}
+      <rect x="73" y="108" width="24" height="8" rx="2" fill="url(#baseMetal)" />
+      <rect x="75" y="116" width="20" height="6" rx="1.5" fill="url(#baseMetal)" />
+      <rect x="77" y="122" width="16" height="5" rx="1.5" fill="url(#baseMetal)" />
+      {/* Screw threads */}
+      <line x1="74" y1="114" x2="96" y2="114" stroke="#7C3AED" strokeWidth="0.5" opacity="0.4" />
+      <line x1="75" y1="119" x2="95" y2="119" stroke="#7C3AED" strokeWidth="0.5" opacity="0.4" />
+      {/* Bottom tip */}
+      <path d="M83 127 L83 133 Q85 135 87 133 L87 127 Z" fill="url(#baseMetal)" />
+      {/* Light rays */}
+      <g opacity="0.15" className="animate-pulse" style={{ animationDuration: "4s" }}>
+        <line x1="60" y1="55" x2="40" y2="40" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
+        <line x1="110" y1="55" x2="130" y2="40" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
+        <line x1="55" y1="75" x2="35" y2="75" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
+        <line x1="115" y1="75" x2="135" y2="75" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
+        <line x1="65" y1="40" x2="55" y2="25" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="105" y1="40" x2="115" y2="25" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
+      </g>
       <defs>
-        <linearGradient id="flaskLiquid" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#F9A8D4" />
-          <stop offset="100%" stopColor="#C084FC" />
+        <linearGradient id="bulbGlass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FEFCE8" />
+          <stop offset="30%" stopColor="#FFF7ED" />
+          <stop offset="70%" stopColor="#FEF3C7" />
+          <stop offset="100%" stopColor="#FDE68A" />
+        </linearGradient>
+        <linearGradient id="bulbStroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FCD34D" />
+          <stop offset="50%" stopColor="#FBBF24" />
+          <stop offset="100%" stopColor="#F59E0B" />
+        </linearGradient>
+        <linearGradient id="bulbInnerGlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FEF3C7" />
+          <stop offset="100%" stopColor="#FDE68A" stopOpacity="0.3" />
+        </linearGradient>
+        <linearGradient id="filamentGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FEF08A" />
+          <stop offset="50%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#FBBF24" />
+        </linearGradient>
+        <linearGradient id="baseMetal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#D8B4FE" />
+          <stop offset="50%" stopColor="#C084FC" />
+          <stop offset="100%" stopColor="#A855F7" />
         </linearGradient>
       </defs>
     </svg>
@@ -377,6 +434,7 @@ export function DashboardView() {
   const [companion, setCompanion] = useState<string>("nova");
   const [loading, setLoading] = useState(true);
   const [showStreakCelebration, setShowStreakCelebration] = useState(false);
+  const [replacementTasks, setReplacementTasks] = useState<any[] | null>(null);
   const atmosphere = useAtmosphere();
 
   const load = useCallback(async () => {
@@ -403,6 +461,53 @@ export function DashboardView() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // If the server returned placeholder/dummy missions, try to replace them
+  // with real topics from the first analyzed document the user uploaded.
+  useEffect(() => {
+    if (!mission) return;
+    // If mission already has meaningful learn tasks, skip
+    const hasRealLearn = mission.tasks && mission.tasks.some((t: any) => t.type === 'learn' && t.targetId);
+    if (hasRealLearn) return;
+
+    // Fetch user's documents and try to find an analyzed document with topics
+    (async () => {
+      try {
+        const docsRes = await fetch('/api/documents');
+        if (!docsRes.ok) return;
+        const docsData = await docsRes.json();
+        const docs = docsData.documents || [];
+        for (const d of docs) {
+          // Skip documents not ready
+          if (d.status !== 'ready') continue;
+          // Check topics for this document
+          const topicsRes = await fetch(`/api/teaching/topics/${d.id}`);
+          if (!topicsRes.ok) continue;
+          const topicsData = await topicsRes.json();
+          if (!topicsData.analyzed) continue;
+          const roots = topicsData.topics || [];
+          if (roots.length === 0) continue;
+          // Map top-level topics into mission-like tasks
+          const mapped = roots.slice(0, 5).map((t: any, i: number) => ({
+            id: `learn-${t.id}`,
+            type: 'learn',
+            title: t.title,
+            description: t.summary || `Learn this topic from ${topicsData.document.title}`,
+            targetId: t.id,
+            documentTitle: topicsData.document.title,
+            estimatedMinutes: t.estimatedMinutes || 10,
+            difficulty: t.difficulty || 0.5,
+            isWeak: t.isWeak || false,
+            completed: false,
+          }));
+          setReplacementTasks(mapped);
+          return;
+        }
+      } catch (err) {
+        // ignore
+      }
+    })();
+  }, [mission]);
 
   // Streak celebration
   useEffect(() => {
@@ -533,8 +638,32 @@ export function DashboardView() {
         <div className="relative z-10 p-6 sm:p-8">
           <div className="flex items-center justify-between gap-6 flex-wrap">
             <div className="max-w-md">
-              <div className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center text-2xl mb-4">
-                🧪
+              <div className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center mb-4">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="shrink-0">
+                  <circle cx="18" cy="18" r="16" fill="url(#targetOuter)" stroke="url(#targetOuterStroke)" strokeWidth="1.5" />
+                  <circle cx="18" cy="18" r="11" fill="url(#targetMid)" stroke="#FDE68A" strokeWidth="1" />
+                  <circle cx="18" cy="18" r="6" fill="url(#targetInner)" />
+                  <circle cx="18" cy="18" r="2.5" fill="#FEF08A" />
+                  <ellipse cx="14" cy="13" rx="4" ry="2.5" fill="white" opacity="0.25" />
+                  <defs>
+                    <linearGradient id="targetOuter" x1="0" y1="0" x2="36" y2="36">
+                      <stop offset="0%" stopColor="#FDE68A" />
+                      <stop offset="100%" stopColor="#F59E0B" />
+                    </linearGradient>
+                    <linearGradient id="targetOuterStroke" x1="0" y1="0" x2="36" y2="36">
+                      <stop offset="0%" stopColor="#FBBF24" />
+                      <stop offset="100%" stopColor="#D97706" />
+                    </linearGradient>
+                    <linearGradient id="targetMid" x1="0" y1="0" x2="36" y2="36">
+                      <stop offset="0%" stopColor="#FEF3C7" />
+                      <stop offset="100%" stopColor="#FDE68A" />
+                    </linearGradient>
+                    <linearGradient id="targetInner" x1="0" y1="0" x2="36" y2="36">
+                      <stop offset="0%" stopColor="#F59E0B" />
+                      <stop offset="100%" stopColor="#D97706" />
+                    </linearGradient>
+                  </defs>
+                </svg>
               </div>
               <p className="text-xs font-semibold text-pink-500 underline underline-offset-4 decoration-pink-300 mb-2">
                 Continue your journey
@@ -576,7 +705,7 @@ export function DashboardView() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-40 h-40 rounded-full bg-purple-300 opacity-40 blur-2xl animate-pulse" />
               </div>
-              <FlaskIllustration />
+              <LightBulbIllustration />
             </div>
           </div>
         </div>
@@ -619,7 +748,7 @@ export function DashboardView() {
               {mission.taskCount > 0 ? (
                 <>
                   <div className="space-y-1">
-                    {mission.tasks.slice(0, 3).map((task, i) => (
+                    {(replacementTasks ?? mission.tasks).slice(0, 3).map((task, i) => (
                       <motion.div
                         key={task.id}
                         initial={{ opacity: 0, x: -8 }}

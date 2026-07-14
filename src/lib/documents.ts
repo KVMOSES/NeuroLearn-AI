@@ -2,7 +2,7 @@
  * Real document processing pipeline.
  * - Parses PDF (unpdf), DOCX (mammoth), PPTX (officeparser), TXT/MD (direct).
  * - Chunks text, generates TF-IDF embeddings, persists DocumentChunk rows.
- * - Stores original bytes under /storage for preview/re-download.
+ * - Stores original bytes under /storage for preview/re-download (local fallback when not on Vercel).
  */
 import { db } from "@/lib/db";
 import { pseudoEmbed } from "@/lib/learning";
@@ -11,7 +11,6 @@ import { extractPdfText } from "@/lib/parsers/pdf";
 import { extractDocxText } from "@/lib/parsers/docx";
 import { extractPptxText } from "@/lib/parsers/pptx";
 import fs from "fs/promises";
-import { put } from "@vercel/blob";
 import path from "path";
 import { randomUUID } from "crypto";
 
@@ -34,6 +33,18 @@ async function ensureStorage() {
   } catch {
     // ignore
   }
+}
+
+/**
+ * Store a file to the local storage directory.
+ * Falls back to local storage when Vercel Blob is unavailable.
+ */
+async function storeFile(buffer: Buffer, fileName: string): Promise<string> {
+  await ensureStorage();
+  const safeName = `${randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const filePath = path.join(STORAGE_DIR, safeName);
+  await fs.writeFile(filePath, buffer);
+  return path.join("storage", safeName);
 }
 
 /**
@@ -110,15 +121,8 @@ export async function ingestDocument(
   const source = detectSource(file.type, file.name);
   const title = file.name.replace(/\.[^.]+$/, "");
 
-  // Store original bytes
-  // Upload original file to Vercel Blob
-const storedName = `${randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-
-const blob = await put(storedName, file.buffer, {
-  access: "public",
-});
-
-const storagePath = blob.url;
+  // Store original bytes to local storage
+  const storagePath = await storeFile(file.buffer, file.name);
 
   // Create the document row in processing state
   const doc = await db.document.create({
@@ -147,11 +151,18 @@ const storagePath = blob.url;
         where: { id: doc.id },
         data: { status: "failed" },
       });
-      throw new Error("No text could be extracted from this file.");
+      throw new Error("No text could be extracted from this file. The file may be empty, image-based (scanned PDF without OCR), or in an unsupported format.");
     }
 
     const chunks = chunkText(cleanText);
-    const summary = await summarizeDocument(cleanText).catch(() => "");
+    
+    // Try to summarize, but don't fail if AI is unavailable
+    let summary = "";
+    try {
+      summary = await summarizeDocument(cleanText);
+    } catch {
+      // AI unavailable — continue without summary
+    }
 
     await db.$transaction([
       db.document.update({
@@ -183,9 +194,15 @@ const storagePath = blob.url;
       status: "ready",
     };
   } catch (err) {
+    // Update document status to failed with the error message
+    const errorMessage = err instanceof Error ? err.message : "Unknown error during document processing";
     await db.document.update({
       where: { id: doc.id },
-      data: { status: "failed" },
+      data: { 
+        status: "failed",
+        summary: null,
+        contentText: errorMessage,
+      },
     });
     throw err;
   }
@@ -201,5 +218,18 @@ export async function readDocumentBytes(doc: { storagePath: string | null }): Pr
     return await fs.readFile(abs);
   } catch {
     return null;
+  }
+}
+
+/**
+ * Delete the stored file for a document.
+ */
+export async function deleteDocumentBytes(storagePath: string | null): Promise<void> {
+  if (!storagePath) return;
+  const abs = path.join(process.cwd(), storagePath);
+  try {
+    await fs.unlink(abs);
+  } catch {
+    // ignore missing file
   }
 }

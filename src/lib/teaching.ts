@@ -12,7 +12,7 @@
  * - Memory model: retention tracking with spaced repetition scheduling
  */
 import { db } from "@/lib/db";
-import { generateText, generateJSON } from "@/lib/ai";
+import { generateText, generateJSON, AIError } from "@/lib/ai";
 
 // ============================================================
 // STEP 1 — DOCUMENT UNDERSTANDING
@@ -50,6 +50,12 @@ export async function analyzeDocument(documentId: string): Promise<DocumentAnaly
   if (!doc) throw new Error("Document not found");
 
   const corpus = doc.chunks.map((c) => c.text).join("\n\n").slice(0, 20000) || doc.contentText.slice(0, 20000);
+
+  if (!corpus || corpus.trim().length === 0) {
+    throw new Error("Document has no extractable text content. The file may be empty, image-based (scanned PDF without OCR), or in an unsupported format.");
+  }
+
+  console.log(`[analyzeDocument] Corpus length: ${corpus.length} chars, chunks: ${doc.chunks.length}`);
 
   const messages = [
     {
@@ -89,8 +95,27 @@ Rules:
   ];
 
   const { data, error } = await generateJSON<DocumentAnalysis>(messages);
-  if (error || !data) throw new Error("Failed to parse document analysis");
-  if (!data.topics || !Array.isArray(data.topics)) throw new Error("Invalid analysis");
+  
+  // Propagate the actual error from the AI service instead of swallowing it
+  if (error) {
+    console.error(`[analyzeDocument] AI error:`, error);
+    throw new Error(`Analysis failed: ${error.message}`);
+  }
+  
+  if (!data) {
+    throw new Error("Analysis returned no data. The AI service may be unavailable.");
+  }
+  
+  if (!data.topics || !Array.isArray(data.topics)) {
+    console.error(`[analyzeDocument] Invalid analysis structure:`, JSON.stringify(data).slice(0, 500));
+    throw new Error("Analysis returned an invalid structure. Expected a 'topics' array.");
+  }
+
+  if (data.topics.length === 0) {
+    throw new Error("Analysis completed but no topics were extracted. The document may be too short or lack structured content.");
+  }
+
+  console.log(`[analyzeDocument] Success: ${data.topics.length} top-level topics extracted`);
   return data;
 }
 
@@ -234,7 +259,11 @@ Rules:
   ];
 
   const { data, error } = await generateJSON<DiagnosticQuestion[]>(messages);
-  if (error || !data || !Array.isArray(data)) return [];
+  if (error) {
+    console.error(`[generateDiagnostic] AI error:`, error);
+    throw new Error(`Diagnostic generation failed: ${error.message}`);
+  }
+  if (!data || !Array.isArray(data)) return [];
   return data;
 }
 

@@ -97,7 +97,14 @@ export function DocumentsView() {
           };
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) resolve();
-            else reject(new Error(`Upload failed (${xhr.status})`));
+            else {
+              let msg = `Upload failed (${xhr.status})`;
+              try {
+                const resp = JSON.parse(xhr.responseText);
+                if (resp?.error?.message) msg = resp.error.message;
+              } catch {}
+              reject(new Error(msg));
+            }
           };
           xhr.onerror = () => reject(new Error("Network error"));
           xhr.send(form);
@@ -114,7 +121,7 @@ export function DocumentsView() {
       } catch (err) {
         clearInterval(progressInterval);
         setUploads((u) => u.map((x) => x.id === uploadId ? { ...x, status: "error", error: (err as Error).message } : x));
-        toast.error(`Failed to upload ${file.name}`);
+        toast.error(`Failed to upload ${file.name}: ${(err as Error).message}`);
       }
     }
   }
