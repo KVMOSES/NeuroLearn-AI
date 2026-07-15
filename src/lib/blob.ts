@@ -38,6 +38,11 @@ export async function storeFile(
   fileName: string
 ): Promise<string> {
   const safeName = `${randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  console.log("=== STORAGE DEBUG ===");
+console.log("BLOB_READ_WRITE_TOKEN exists:", !!process.env.BLOB_READ_WRITE_TOKEN);
+console.log("Using Blob:", useBlob());
+console.log("Safe filename:", safeName);
+console.log("====================");
 
   if (useBlob()) {
     const blob = await put(safeName, buffer, {
