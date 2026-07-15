@@ -2,7 +2,8 @@
  * Real document processing pipeline.
  * - Parses PDF (unpdf), DOCX (mammoth), PPTX (officeparser), TXT/MD (direct).
  * - Chunks text, generates TF-IDF embeddings, persists DocumentChunk rows.
- * - Stores original bytes under /storage for preview/re-download (local fallback when not on Vercel).
+ * - Stores original bytes via Vercel Blob (production) or local /storage (development),
+ *   never writing to the read-only application directory on Vercel.
  */
 import { db } from "@/lib/db";
 import { pseudoEmbed } from "@/lib/learning";
@@ -10,11 +11,8 @@ import { summarizeDocument } from "@/lib/ai";
 import { extractPdfText } from "@/lib/parsers/pdf";
 import { extractDocxText } from "@/lib/parsers/docx";
 import { extractPptxText } from "@/lib/parsers/pptx";
-import fs from "fs/promises";
+import { storeFile, readFile, deleteFile } from "@/lib/blob";
 import path from "path";
-import { randomUUID } from "crypto";
-
-const STORAGE_DIR = path.join(process.cwd(), "storage");
 
 export type DocSource = "pdf" | "docx" | "pptx" | "txt" | "md";
 
@@ -27,28 +25,10 @@ export function detectSource(mimeType: string, fileName: string): DocSource {
   return "txt";
 }
 
-async function ensureStorage() {
-  try {
-    await fs.mkdir(STORAGE_DIR, { recursive: true });
-  } catch {
-    // ignore
-  }
-}
-
-/**
- * Store a file to the local storage directory.
- * Falls back to local storage when Vercel Blob is unavailable.
- */
-async function storeFile(buffer: Buffer, fileName: string): Promise<string> {
-  await ensureStorage();
-  const safeName = `${randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const filePath = path.join(STORAGE_DIR, safeName);
-  await fs.writeFile(filePath, buffer);
-  return path.join("storage", safeName);
-}
-
 /**
  * Extract plain text from a file buffer based on its source type.
+ * For parsers that require a file path (some PDF/Office libs), writes
+ * a transient copy to /tmp and removes it after extraction.
  */
 export async function extractText(
   source: DocSource,
@@ -110,18 +90,19 @@ export interface IngestResult {
 }
 
 /**
- * Full ingestion pipeline: store bytes, extract text, chunk, embed, summarize.
+ * Full ingestion pipeline: store bytes via Blob/local, extract text, chunk, embed, summarize.
+ * No filesystem writes to application directory — uses Vercel Blob in production,
+ * /tmp for transient parser files (cleaned up after), and local /storage as dev fallback.
  */
 export async function ingestDocument(
   userId: string,
   file: { name: string; type: string; size: number; buffer: Buffer },
   opts: { folderId?: string; tags?: string[] } = {}
 ): Promise<IngestResult> {
-  await ensureStorage();
   const source = detectSource(file.type, file.name);
   const title = file.name.replace(/\.[^.]+$/, "");
 
-  // Store original bytes to local storage
+  // Store original bytes — uses Vercel Blob (production) or local /storage (dev)
   const storagePath = await storeFile(file.buffer, file.name);
 
   // Create the document row in processing state
@@ -210,26 +191,18 @@ export async function ingestDocument(
 
 /**
  * Read the stored original bytes for a document (preview/download).
+ * Works with both Vercel Blob URLs and local paths.
  */
 export async function readDocumentBytes(doc: { storagePath: string | null }): Promise<Buffer | null> {
   if (!doc.storagePath) return null;
-  const abs = path.join(process.cwd(), doc.storagePath);
-  try {
-    return await fs.readFile(abs);
-  } catch {
-    return null;
-  }
+  return readFile(doc.storagePath);
 }
 
 /**
  * Delete the stored file for a document.
+ * Works with both Vercel Blob URLs and local paths.
  */
 export async function deleteDocumentBytes(storagePath: string | null): Promise<void> {
   if (!storagePath) return;
-  const abs = path.join(process.cwd(), storagePath);
-  try {
-    await fs.unlink(abs);
-  } catch {
-    // ignore missing file
-  }
+  return deleteFile(storagePath);
 }
