@@ -50,78 +50,165 @@ function parseJSON<T>(raw: string): T | null {
 }
 
 // ============================================================
-// FEATURE 1 — AI PRESENTATION GENERATOR
+// FEATURE 1 — AI PRESENTATION GENERATOR (Professional Quality)
 // ============================================================
 
 export interface PresentationSlide {
-  type: "title" | "agenda" | "topic" | "example" | "summary" | "revision" | "qa" | "references" | "objectives";
+  type: "title" | "agenda" | "topic" | "example" | "summary" | "revision" | "qa" | "references" | "objectives" | "data" | "comparison" | "timeline" | "quote" | "break";
   title: string;
   content: string[];
   speakerNotes?: string;
   icon?: string;
+  layout?: "left" | "center" | "split" | "grid" | "full-bleed";
+  chart?: {
+    type: "bar" | "line" | "pie" | "radar" | "comparison";
+    title: string;
+    data: { label: string; value: number; color?: string }[];
+  } | null;
+  imagePrompt?: string;
+  keyTakeaway?: string;
+  stats?: { value: string; label: string }[];
 }
 
 export interface Presentation {
   title: string;
   subtitle: string;
   slides: PresentationSlide[];
+  theme: {
+    primaryColor: string;
+    secondaryColor: string;
+    accentColor: string;
+    fontPairing: string;
+    backgroundColor: string;
+    textColor: string;
+  };
 }
 
-export type PresentationStyle = "university" | "professional" | "minimal" | "dark" | "modern";
+export type PresentationStyle = "university" | "professional" | "minimal" | "dark" | "modern" | "vibrant" | "elegant";
+
+export type ColorPalette = "default" | "ocean" | "sunset" | "forest" | "midnight" | "coral" | "lavender";
+
+const COLOR_PALETTES: Record<ColorPalette, { primary: string; secondary: string; accent: string; bg: string; text: string }> = {
+  default: { primary: "#7C3AED", secondary: "#EC4899", accent: "#F59E0B", bg: "#FFFFFF", text: "#1A1A2E" },
+  ocean: { primary: "#0EA5E9", secondary: "#06B6D4", accent: "#10B981", bg: "#F0F9FF", text: "#0C4A6E" },
+  sunset: { primary: "#F97316", secondary: "#EC4899", accent: "#FBBF24", bg: "#FFF7ED", text: "#7C2D12" },
+  forest: { primary: "#059669", secondary: "#10B981", accent: "#D97706", bg: "#F0FDF4", text: "#14532D" },
+  midnight: { primary: "#6366F1", secondary: "#8B5CF6", accent: "#F472B6", bg: "#0F172A", text: "#F8FAFC" },
+  coral: { primary: "#F43F5E", secondary: "#FB7185", accent: "#FBBF24", bg: "#FFF1F2", text: "#881337" },
+  lavender: { primary: "#8B5CF6", secondary: "#A78BFA", accent: "#C084FC", bg: "#FAF5FF", text: "#4C1D95" },
+};
 
 export async function generatePresentation(
   documentId: string,
   slideCount: number,
-  style: PresentationStyle
+  style: PresentationStyle,
+  palette: ColorPalette = "default"
 ): Promise<Presentation> {
   const { doc, corpus, topicTitles } = await getDocumentContext(documentId);
 
+  const colors = COLOR_PALETTES[palette];
+
   const styleGuides: Record<PresentationStyle, string> = {
-    university: "Academic style with clear structure, citations, and formal language.",
-    professional: "Business-professional with clean layouts, data points, and executive tone.",
-    minimal: "Minimalist with lots of whitespace, short text, and focus on key points.",
-    dark: "Dark theme with high contrast, modern typography, and accent colors.",
-    modern: "Modern design with bold colors, icons, and visual hierarchy.",
+    university: "Academic style with clear structure, citations, formal language, serif fonts, and scholarly tone. Use data slides and comparison layouts.",
+    professional: "Business-professional with clean layouts, data points, executive tone, sans-serif fonts. Include charts, stats, and key takeaways.",
+    minimal: "Minimalist with lots of whitespace, short text, focus on key points. Clean typography, subtle colors, maximum 3 words per bullet.",
+    dark: "Dark theme with high contrast, modern typography, accent colors, bold visuals. Use full-bleed layouts and vibrant accents.",
+    modern: "Modern design with bold colors, icons, visual hierarchy, split layouts, and dynamic slide structures. Include data visualizations.",
+    vibrant: "Energetic, colorful design with gradients, bold typography, playful layouts, and rich visual elements. Use grid and split layouts.",
+    elegant: "Sophisticated, refined design with muted colors, elegant fonts, generous whitespace, and premium feel. Use centered layouts.",
   };
 
-  const systemPrompt = `You are an expert presentation designer. Create a professional ${slideCount}-slide presentation from the provided document.
+  const systemPrompt = `You are an elite presentation designer — comparable to the best Canva, Gamma, and Beautiful.ai designers. Create a world-class, professional ${slideCount}-slide presentation from the provided document.
 
 Style: ${styleGuides[style]}
 
-Return ONLY strict JSON (no markdown):
+Color Palette:
+- Primary: ${colors.primary}
+- Secondary: ${colors.secondary}
+- Accent: ${colors.accent}
+- Background: ${colors.bg}
+- Text: ${colors.text}
+
+Return ONLY strict JSON (no markdown, no code fences):
 {
-  "title": "presentation title",
-  "subtitle": "one-line subtitle",
+  "title": "compelling presentation title",
+  "subtitle": "engaging one-line subtitle",
+  "theme": {
+    "primaryColor": "${colors.primary}",
+    "secondaryColor": "${colors.secondary}",
+    "accentColor": "${colors.accent}",
+    "fontPairing": "Inter + Playfair Display",
+    "backgroundColor": "${colors.bg}",
+    "textColor": "${colors.text}"
+  },
   "slides": [
     {
-      "type": "title|agenda|topic|example|summary|revision|qa|references|objectives",
+      "type": "title|agenda|topic|example|summary|revision|qa|references|objectives|data|comparison|timeline|quote|break",
       "title": "slide title",
-      "content": ["bullet point 1", "bullet point 2", "bullet point 3"],
-      "speakerNotes": "what the presenter should say",
-      "icon": "emoji icon"
+      "content": ["concise bullet 1", "concise bullet 2", "concise bullet 3"],
+      "speakerNotes": "2-3 sentences of what the presenter should say — conversational, insightful, adds value beyond the slide text",
+      "icon": "relevant emoji",
+      "layout": "left|center|split|grid|full-bleed",
+      "chart": null or {
+        "type": "bar|line|pie|radar|comparison",
+        "title": "chart title",
+        "data": [{"label": "item", "value": 85, "color": "${colors.primary}"}]
+      },
+      "keyTakeaway": "one powerful sentence the audience should remember",
+      "stats": [{"value": "85%", "label": "stat label"}]
     }
   ]
 }
 
-Rules:
-- Include a title slide, agenda, topic slides, examples, summary, revision, Q&A, and references.
-- Keep slide text minimal — 3-5 bullet points max per slide.
-- Speaker notes should be 2-3 sentences.
-- Use emoji icons relevant to each slide's content.
-- Total slides should be approximately ${slideCount}.
-- Content must be derived from the document, not generic.`;
+CRITICAL RULES:
+1. Slide Structure — Every presentation MUST include in this order:
+   - Title slide (with compelling title + subtitle)
+   - Agenda/Overview slide (3-5 key points)
+   - 2-3 topic/content slides with deep document-derived content
+   - 1 data slide with a chart (if document has quantitative info) OR comparison slide
+   - 1 example/case study slide
+   - 1 key insight/takeaway slide
+   - 1 summary slide
+   - 1 Q&A slide
+   - 1 references/further reading slide
+
+2. Content Quality:
+   - Each bullet must be 5-10 words MAX — concise, impactful, presentation-ready
+   - Content must be DERIVED FROM THE DOCUMENT, not generic filler
+   - Use specific numbers, dates, names, and facts from the document
+   - Speaker notes should be 2-3 sentences of valuable context
+
+3. Visual Design:
+   - Vary layouts across slides (don't use the same layout twice in a row)
+   - Use icons that match the content theme
+   - Include stats on key slides for visual impact
+   - Key takeaway should be a memorable, quotable sentence
+
+4. Total slides should be exactly ${slideCount}.
+5. NO generic content — every slide must reference specific document content.`;
 
   const userPrompt = `Document: ${doc.title}\nTopics: ${topicTitles.join(", ")}\n\nContent:\n${corpus}`;
 
   const raw = await aiGenerate(systemPrompt, userPrompt);
   const parsed = parseJSON<Presentation>(raw);
-  if (!parsed || !parsed.slides) {
+  if (!parsed || !parsed.slides || parsed.slides.length < 3) {
     return {
       title: doc.title,
       subtitle: "AI-Generated Presentation",
+      theme: {
+        primaryColor: colors.primary,
+        secondaryColor: colors.secondary,
+        accentColor: colors.accent,
+        fontPairing: "Inter + Playfair Display",
+        backgroundColor: colors.bg,
+        textColor: colors.text,
+      },
       slides: [
-        { type: "title", title: doc.title, content: ["AI-Generated Presentation"], speakerNotes: "Welcome to this presentation.", icon: "📋" },
-        { type: "summary", title: "Summary", content: ["Unable to generate full presentation. Please try again."], icon: "📝" },
+        { type: "title", title: doc.title, content: ["A comprehensive overview"], speakerNotes: "Welcome to this presentation.", icon: "📋", layout: "center" },
+        { type: "agenda", title: "Overview", content: ["Key concepts", "Main topics", "Applications", "Summary"], speakerNotes: "Here's what we'll cover.", icon: "📑", layout: "left" },
+        { type: "topic", title: "Core Concepts", content: ["Derived from your document content", "Key principles and ideas", "Important frameworks"], speakerNotes: "Let's dive into the core concepts.", icon: "💡", layout: "split" },
+        { type: "summary", title: "Summary", content: ["Key takeaways from this presentation", "Main points to remember"], speakerNotes: "To summarize what we've learned.", icon: "📝", layout: "center" },
+        { type: "qa", title: "Questions & Discussion", content: ["Open floor for questions", "Let's discuss the key ideas"], speakerNotes: "I'm happy to answer any questions.", icon: "❓", layout: "center" },
       ],
     };
   }
@@ -452,6 +539,8 @@ export async function exportPresentationToPPTX(presentation: Presentation, style
     minimal: { bg: "FFFFFF", text: "1A1A1A", accent: "718096" },
     dark: { bg: "1A1A2E", text: "FFFFFF", accent: "E94560" },
     modern: { bg: "F7FAFC", text: "1A202C", accent: "805AD5" },
+    vibrant: { bg: "FFF7ED", text: "7C2D12", accent: "F97316" },
+    elegant: { bg: "FAFAFA", text: "292524", accent: "78716C" },
   };
   const theme = themes[style];
 

@@ -9,7 +9,7 @@ import { z } from "zod";
 
 const schema = z.object({
   presentation: z.any(),
-  style: z.enum(["university", "professional", "minimal", "dark", "modern"]).default("modern"),
+  style: z.enum(["university", "professional", "minimal", "dark", "modern", "vibrant", "elegant"]).default("modern"),
 });
 
 export async function POST(req: Request) {

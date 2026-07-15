@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/lib/store";
 import { api } from "@/lib/api-client";
-import type { MissionDTO, MaterialSummary, LearnerProfileDTO, JourneyDTO } from "@/lib/types";
+import type { MissionDTO, MaterialSummary, LearnerProfileDTO, JourneyDTO, JourneyEvent } from "@/lib/types";
 import { levelTitle, relativeTime } from "@/lib/ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoadingState } from "@/components/empty-states";
@@ -22,6 +22,7 @@ import { DashboardSkeleton } from "@/components/skeletons";
 import { CompanionAvatar } from "@/components/companion-avatar";
 import { useAtmosphere } from "@/lib/atmosphere";
 import { Celebration, XPFloater } from "@/components/celebration";
+import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------- */
 /* Companion config                                                       */
@@ -67,29 +68,24 @@ function Sparkline({ color, values, id }: { color: string; values: number[]; id:
 function LightBulbIllustration() {
   return (
     <svg width="170" height="170" viewBox="0 0 170 170" fill="none" className="shrink-0 relative z-10">
-      {/* Glow aura */}
       <circle cx="85" cy="75" r="60" fill="#FBBF24" opacity="0.12" className="animate-pulse" />
       <circle cx="85" cy="75" r="45" fill="#FCD34D" opacity="0.08" className="animate-pulse" style={{ animationDelay: "0.5s" }} />
-      {/* Floating sparkles */}
       <circle cx="140" cy="30" r="5" fill="#FDE68A" opacity="0.7" />
       <circle cx="150" cy="75" r="3.5" fill="#FEF3C7" opacity="0.5" />
       <circle cx="22" cy="55" r="4.5" fill="#FDE68A" opacity="0.6" />
       <circle cx="16" cy="100" r="3" fill="#FEF3C7" opacity="0.5" />
       <circle cx="130" cy="120" r="3" fill="#FDE68A" opacity="0.4" />
-      {/* Light bulb glass dome */}
       <path
         d="M60 65 C60 38 78 22 85 22 C92 22 110 38 110 65 C110 82 102 92 98 98 C96 101 95 104 95 108 L75 108 C75 104 74 101 72 98 C68 92 60 82 60 65Z"
         fill="url(#bulbGlass)"
         stroke="url(#bulbStroke)"
         strokeWidth="2"
       />
-      {/* Inner glow */}
       <path
         d="M65 65 C65 42 79 28 85 28 C91 28 105 42 105 65 C105 80 98 89 94 95 C92 98 91 101 91 105 L79 105 C79 101 78 98 76 95 C72 89 65 80 65 65Z"
         fill="url(#bulbInnerGlow)"
         opacity="0.4"
       />
-      {/* Filament */}
       <path
         d="M80 75 L78 50 L82 48 L85 60 L88 48 L92 50 L90 75"
         stroke="url(#filamentGrad)"
@@ -100,18 +96,13 @@ function LightBulbIllustration() {
         className="animate-pulse"
         style={{ animationDuration: "3s" }}
       />
-      {/* Filament glow */}
       <line x1="80" y1="72" x2="90" y2="72" stroke="#FEF08A" strokeWidth="8" opacity="0.3" strokeLinecap="round" className="animate-pulse" style={{ animationDuration: "2s" }} />
-      {/* Base / screw */}
       <rect x="73" y="108" width="24" height="8" rx="2" fill="url(#baseMetal)" />
       <rect x="75" y="116" width="20" height="6" rx="1.5" fill="url(#baseMetal)" />
       <rect x="77" y="122" width="16" height="5" rx="1.5" fill="url(#baseMetal)" />
-      {/* Screw threads */}
       <line x1="74" y1="114" x2="96" y2="114" stroke="#7C3AED" strokeWidth="0.5" opacity="0.4" />
       <line x1="75" y1="119" x2="95" y2="119" stroke="#7C3AED" strokeWidth="0.5" opacity="0.4" />
-      {/* Bottom tip */}
       <path d="M83 127 L83 133 Q85 135 87 133 L87 127 Z" fill="url(#baseMetal)" />
-      {/* Light rays */}
       <g opacity="0.15" className="animate-pulse" style={{ animationDuration: "4s" }}>
         <line x1="60" y1="55" x2="40" y2="40" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
         <line x1="110" y1="55" x2="130" y2="40" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" />
@@ -189,14 +180,14 @@ function NovaAvatar() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Stat card                                                              */
+/* Stat card with premium hover animation                                 */
 /* ---------------------------------------------------------------------- */
 function StatCard({ glow, label, icon, value, unit, sub, chartColor, trend }: {
   glow: string; label: string; icon: string; value: string; unit?: string; sub: string;
   chartColor: string; trend: number[];
 }) {
   return (
-    <div className={`glass-card rounded-2xl p-5 ${glow}`}>
+    <div className={`glass-card rounded-2xl p-5 ${glow} stat-card`}>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-lg shrink-0">{icon}</span>
         <span className="text-xs font-medium text-muted-foreground truncate">{label}</span>
@@ -212,11 +203,11 @@ function StatCard({ glow, label, icon, value, unit, sub, chartColor, trend }: {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Badges card                                                            */
+/* Badges card with premium hover animation                               */
 /* ---------------------------------------------------------------------- */
 function BadgesCard({ count }: { count: number }) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 stat-card">
       <div className="flex items-center gap-2 mb-3">
         <div className="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
           <Shield size={14} className="text-orange-500" />
@@ -235,7 +226,7 @@ function BadgesCard({ count }: { count: number }) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Mission item                                                           */
+/* Mission item with premium hover animation                              */
 /* ---------------------------------------------------------------------- */
 function MissionItem({ task, index }: { task: any; index: number }) {
   const accentColors = ["pink", "orange", "blue"];
@@ -243,7 +234,7 @@ function MissionItem({ task, index }: { task: any; index: number }) {
   return (
     <button className="mission-row w-full flex items-center gap-4 p-3 rounded-2xl text-left group">
       <div className="w-11 h-11 flex items-center justify-center shrink-0">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center premium-hover ${
           task.completed ? "bg-emerald-500" : task.type === "review" ? "bg-amber-500/80" : task.type === "analyze" ? "bg-cyan-500/80" : "bg-primary/15"
         }`}>
           {task.completed ? <CheckCircle2 className="w-5 h-5 text-white" />
@@ -263,71 +254,248 @@ function MissionItem({ task, index }: { task: any; index: number }) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Study Calendar                                                         */
+/* Functional Study Calendar with real data                               */
 /* ---------------------------------------------------------------------- */
-const CALENDAR_DAYS = [
-  { d: 31, muted: true }, { d: 1 }, { d: 2 }, { d: 3 }, { d: 4 }, { d: 5 }, { d: 6 },
-  { d: 7 }, { d: 8 }, { d: 9 }, { d: 10 }, { d: 11 }, { d: 12 }, { d: 13 },
-  { d: 14 }, { d: 15 }, { d: 16 }, { d: 17 }, { d: 18 }, { d: 19 }, { d: 20 },
-  { d: 21 }, { d: 22 }, { d: 23 }, { d: 24 }, { d: 25 }, { d: 26 }, { d: 27 },
-  { d: 28 }, { d: 29 }, { d: 30 }, { d: 1, muted: true }, { d: 2, muted: true },
-  { d: 3, muted: true }, { d: 4, muted: true },
-];
+interface CalendarEventItem {
+  date: Date;
+  title: string;
+  type: "lesson" | "quiz" | "diagnostic" | "document" | "xp" | "assignment";
+  id: string;
+}
 
-function StudyCalendar() {
-  const [selected, setSelected] = useState(8);
-  const selectedInfo = CALENDAR_DAYS[selected];
-  const label = selectedInfo?.muted ? `${selectedInfo.d} — other month` : `${selectedInfo?.d} June 2026`;
-  const message = selected === 8 ? 'You have tasks planned today.' : 'No tasks planned for this day yet.';
+function StudyCalendar({ journey }: { journey: JourneyDTO | null }) {
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Build events from real journey data
+  const events = useMemo<CalendarEventItem[]>(() => {
+    if (!journey?.timeline) return [];
+    return journey.timeline.map((e: JourneyEvent) => ({
+      date: new Date(e.timestamp),
+      title: e.title,
+      type: e.type as CalendarEventItem["type"],
+      id: e.id,
+    }));
+  }, [journey]);
+
+  // Get events for a specific day
+  const getEventsForDay = (day: number, month: number, year: number): CalendarEventItem[] => {
+    return events.filter((e) => {
+      const d = new Date(e.date);
+      return d.getDate() === day && d.getMonth() === month && d.getFullYear() === year;
+    });
+  };
+
+  // Navigate months
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear((y) => y - 1);
+    } else {
+      setCurrentMonth((m) => m - 1);
+    }
+  };
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear((y) => y + 1);
+    } else {
+      setCurrentMonth((m) => m + 1);
+    }
+  };
+
+  const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const DAY_NAMES = ["S", "M", "T", "W", "T", "F", "S"];
+
+  // Build calendar grid
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+  const calendarDays: { d: number; muted: boolean; isToday: boolean; events: CalendarEventItem[] }[] = [];
+
+  // Previous month's trailing days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const day = daysInPrevMonth - i;
+    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    calendarDays.push({
+      d: day,
+      muted: true,
+      isToday: false,
+      events: getEventsForDay(day, prevMonth, prevYear),
+    });
+  }
+
+  // Current month's days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+    calendarDays.push({
+      d,
+      muted: false,
+      isToday,
+      events: getEventsForDay(d, currentMonth, currentYear),
+    });
+  }
+
+  // Next month's leading days to fill 6 rows (42 cells)
+  while (calendarDays.length < 42) {
+    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    const fillDay = calendarDays.length - (firstDay + daysInMonth) + 1;
+    calendarDays.push({
+      d: fillDay,
+      muted: true,
+      isToday: false,
+      events: getEventsForDay(fillDay, nextMonth, nextYear),
+    });
+  }
+
+  // Selected day info
+  const selectedDayInfo = selectedDate ? {
+    label: selectedDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+    events: getEventsForDay(selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear()),
+  } : null;
+
+  // Default to today's events when nothing selected
+  const defaultEvents = getEventsForDay(today.getDate(), today.getMonth(), today.getFullYear());
+
+  // Event type styles
+  const typeColors: Record<string, string> = {
+    lesson: "bg-primary text-primary-foreground",
+    quiz: "bg-emerald-500 text-white",
+    diagnostic: "bg-amber-500 text-white",
+    document: "bg-cyan-500 text-white",
+    xp: "bg-purple-500 text-white",
+    assignment: "bg-rose-500 text-white",
+  };
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 calendar-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calendar size={15} className="text-purple-400" />
           <h3 className="font-semibold text-foreground text-sm">Study Calendar</h3>
         </div>
-        <button className="text-muted-foreground/40 hover:text-muted-foreground">
+        <button className="text-muted-foreground/40 hover:text-muted-foreground transition-colors">
           <MoreHorizontal size={16} />
         </button>
       </div>
+
+      {/* Month navigation */}
       <div className="flex items-center justify-between mb-3">
-        <button className="text-muted-foreground/40 hover:text-muted-foreground">
+        <button
+          onClick={prevMonth}
+          className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/50 transition-all cal-nav-btn"
+          aria-label="Previous month"
+        >
           <ChevronLeft size={15} />
         </button>
-        <span className="text-xs font-semibold text-foreground/60">June 2026</span>
-        <button className="text-muted-foreground/40 hover:text-muted-foreground">
+        <span className="text-xs font-semibold text-foreground/60">
+          {MONTH_NAMES[currentMonth]} {currentYear}
+        </span>
+        <button
+          onClick={nextMonth}
+          className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/50 transition-all cal-nav-btn"
+          aria-label="Next month"
+        >
           <ChevronRight size={15} />
         </button>
       </div>
+
+      {/* Day headers */}
       <div className="grid grid-cols-7 gap-y-1.5 text-center mb-1">
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+        {DAY_NAMES.map((d, i) => (
           <span key={i} className="text-xs font-medium text-muted-foreground/30">{d}</span>
         ))}
       </div>
+
+      {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-y-1.5 text-center">
-        {CALENDAR_DAYS.map((day, i) => (
-          <button
-            key={i}
-            onClick={() => setSelected(i)}
-            className={`cal-day w-7 h-7 mx-auto rounded-full text-xs flex items-center justify-center transition-all ${
-              i === selected
-                ? 'bg-primary text-primary-foreground font-semibold shadow-md'
-                : day.muted
-                ? 'text-muted-foreground/30'
-                : 'text-foreground/60'
-            }`}
-          >
-            {day.d}
-          </button>
-        ))}
+        {calendarDays.map((day, i) => {
+          const isSelected = selectedDate
+            ? day.d === selectedDate.getDate() && !day.muted
+              && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear()
+            : false;
+          const hasEvents = day.events.length > 0;
+          return (
+            <button
+              key={i}
+              onClick={() => {
+                if (day.muted) {
+                  // Navigate to the clicked month
+                  if (day.d > 15) {
+                    prevMonth();
+                  } else {
+                    nextMonth();
+                  }
+                }
+                const actualMonth = day.muted
+                  ? (day.d > 15 ? (currentMonth === 0 ? 11 : currentMonth - 1) : (currentMonth === 11 ? 0 : currentMonth + 1))
+                  : currentMonth;
+                const actualYear = day.muted
+                  ? (day.d > 15 ? (currentMonth === 0 ? currentYear - 1 : currentYear) : (currentMonth === 11 ? currentYear + 1 : currentYear))
+                  : currentYear;
+                setSelectedDate(new Date(actualYear, actualMonth, day.d));
+              }}
+              className={cn(
+                "cal-day w-7 h-7 mx-auto rounded-full text-xs flex items-center justify-center transition-all relative",
+                day.isToday && !isSelected && "ring-2 ring-primary ring-offset-1 ring-offset-transparent font-bold",
+                isSelected
+                  ? 'bg-primary text-primary-foreground font-semibold shadow-md'
+                  : day.muted
+                  ? 'text-muted-foreground/30'
+                  : 'text-foreground/60',
+                !day.muted && !isSelected && 'hover:bg-white/70 hover:scale-110 hover:shadow-sm'
+              )}
+            >
+              {day.d}
+              {hasEvents && !isSelected && (
+                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary/60" />
+              )}
+            </button>
+          );
+        })}
       </div>
-      <div className="flex items-start gap-2 mt-4 pt-4 border-t border-border">
-        <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-foreground">{label}</p>
-          <p className="text-xs text-muted-foreground">{message}</p>
+
+      {/* Selected day info with events */}
+      <div className="mt-4 pt-4 border-t border-border/50">
+        <div className="flex items-start gap-2 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-foreground">
+              {selectedDayInfo?.label ?? today.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+            </p>
+          </div>
         </div>
+        {selectedDayInfo && selectedDayInfo.events.length > 0 ? (
+          <div className="space-y-1.5 mt-1.5">
+            {selectedDayInfo.events.slice(0, 3).map((ev) => (
+              <div key={ev.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 hover:bg-white/80 transition-colors">
+                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", typeColors[ev.type]?.split(" ")[0] ?? "bg-primary")} />
+                <span className="text-[11px] text-foreground/70 truncate flex-1">{ev.title}</span>
+                <span className="text-[9px] text-muted-foreground uppercase">{ev.type}</span>
+              </div>
+            ))}
+            {selectedDayInfo.events.length > 3 && (
+              <p className="text-[10px] text-muted-foreground pl-2">+{selectedDayInfo.events.length - 3} more</p>
+            )}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {selectedDate && selectedDate.toDateString() === today.toDateString()
+              ? defaultEvents.length > 0
+                ? `${defaultEvents.length} event${defaultEvents.length > 1 ? "s" : ""} scheduled today`
+                : "No tasks planned for today."
+              : "No events scheduled for this day."}
+          </p>
+        )}
+        {/* Show today's events summary if nothing selected */}
+        {!selectedDate && defaultEvents.length === 0 && (
+          <p className="text-xs text-muted-foreground mt-0.5">No tasks planned for today. Take a break!</p>
+        )}
       </div>
     </div>
   );
@@ -350,13 +518,13 @@ function LearningInsights() {
   const last = pts[pts.length - 1];
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 insights-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <TrendingUp size={15} className="text-green-500" />
           <h3 className="font-semibold text-foreground text-sm">Learning Insights</h3>
         </div>
-        <button className="text-muted-foreground/40 hover:text-muted-foreground">
+        <button className="text-muted-foreground/40 hover:text-muted-foreground transition-colors">
           <MoreHorizontal size={16} />
         </button>
       </div>
@@ -399,7 +567,7 @@ function ActivityRow({ event, isLast }: { event: any; isLast: boolean }) {
   const Icon = EVENT_ICONS[event.icon] ?? BookOpen;
   const colorClass = EVENT_COLORS[event.type] ?? EVENT_COLORS.lesson;
   return (
-    <div className="flex gap-2.5 relative">
+    <div className="flex gap-2.5 relative activity-row">
       {!isLast && <div className="absolute left-[15px] top-8 bottom-0 w-px bg-border" />}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${colorClass}`}>
         <Icon className="w-3.5 h-3.5" />
@@ -465,11 +633,9 @@ export function DashboardView() {
   // with real topics from the first analyzed document the user uploaded.
   useEffect(() => {
     if (!mission) return;
-    // If mission already has meaningful learn tasks, skip
     const hasRealLearn = mission.tasks && mission.tasks.some((t: any) => t.type === 'learn' && t.targetId);
     if (hasRealLearn) return;
 
-    // Fetch user's documents and try to find an analyzed document with topics
     (async () => {
       try {
         const docsRes = await fetch('/api/documents');
@@ -477,16 +643,13 @@ export function DashboardView() {
         const docsData = await docsRes.json();
         const docs = docsData.documents || [];
         for (const d of docs) {
-          // Skip documents not ready
           if (d.status !== 'ready') continue;
-          // Check topics for this document
           const topicsRes = await fetch(`/api/teaching/topics/${d.id}`);
           if (!topicsRes.ok) continue;
           const topicsData = await topicsRes.json();
           if (!topicsData.analyzed) continue;
           const roots = topicsData.topics || [];
           if (roots.length === 0) continue;
-          // Map top-level topics into mission-like tasks
           const mapped = roots.slice(0, 5).map((t: any, i: number) => ({
             id: `learn-${t.id}`,
             type: 'learn',
@@ -614,7 +777,7 @@ export function DashboardView() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setView("tutor")}
-              className="hidden lg:flex items-center gap-2 rounded-xl px-3.5 py-2.5 shadow-sm glass-card text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden lg:flex items-center gap-2 rounded-xl px-3.5 py-2.5 shadow-sm glass-card text-sm text-muted-foreground hover:text-foreground transition-colors premium-hover"
             >
               <Bot size={15} className="shrink-0" />
               <span className="flex-1 truncate">Chat with {comp.name}</span>
@@ -628,7 +791,7 @@ export function DashboardView() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-        className="relative overflow-hidden rounded-3xl border border-primary/10"
+        className="relative overflow-hidden rounded-3xl border border-primary/10 hero-card"
       >
         <div className="absolute inset-0 gradient-mesh" />
         <div className={`orb w-48 h-48 -top-12 -right-12 bg-gradient-to-br ${comp.gradient}`} style={{ animationDelay: "0s" }} />
@@ -686,15 +849,15 @@ export function DashboardView() {
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setView("learn")}
-                  className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-lg shadow-pink-200 hover:shadow-xl hover:scale-105 transition-all"
+                  className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-lg shadow-pink-200 hover:shadow-xl hover:scale-105 transition-all premium-btn"
                 >
                   Continue Learning <ArrowRight size={15} />
                 </button>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 badge-hover">
                   <Flame className="w-3.5 h-3.5" />
                   <span className="text-xs font-bold">{mission.streak.current} day streak</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary badge-hover">
                   <Zap className="w-3.5 h-3.5" />
                   <span className="text-xs font-bold">{mission.totalXP.toLocaleString()} XP</span>
                 </div>
@@ -743,7 +906,7 @@ export function DashboardView() {
               )}
             </div>
 
-            <div className="glass-card rounded-2xl p-5 sm:p-6">
+            <div className="glass-card rounded-2xl p-5 sm:p-6 mission-card">
               {mission.taskCount > 0 ? (
                 <>
                   <div className="space-y-1">
@@ -794,7 +957,7 @@ export function DashboardView() {
 
               {/* Mission footer */}
               <div
-                className="mt-4 relative overflow-hidden rounded-2xl p-5 flex items-center justify-between gap-4"
+                className="mt-4 relative overflow-hidden rounded-2xl p-5 flex items-center justify-between gap-4 premium-card"
                 style={{ background: 'linear-gradient(120deg, #FDF2F8, #F3E8FF)' }}
               >
                 <div className="flex items-start gap-3 min-w-0">
@@ -839,7 +1002,7 @@ export function DashboardView() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex items-start gap-2.5 px-4 py-2.5 rounded-xl bg-primary/[0.04] border border-primary/10"
+                className="flex items-start gap-2.5 px-4 py-2.5 rounded-xl bg-primary/[0.04] border border-primary/10 premium-hover"
               >
                 <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs text-foreground/80 leading-relaxed">{recommendations[0]}</p>
@@ -865,7 +1028,7 @@ export function DashboardView() {
                     initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.25 + i * 0.05 }}
-                    className="glass-card rounded-xl p-3 border-l-2 border-amber-500/30"
+                    className="glass-card rounded-xl p-3 border-l-2 border-amber-500/30 insights-card"
                   >
                     <p className="text-xs leading-relaxed text-foreground/80">{insight}</p>
                   </motion.div>
@@ -895,8 +1058,8 @@ export function DashboardView() {
                       onClick={() => setView("learn", { materialId: m.id })}
                       className="w-full text-left group press"
                     >
-                      <Card className="p-3 hover:shadow-soft transition-shadow flex items-center gap-3 glass-card">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Card className="p-3 hover:shadow-soft transition-shadow flex items-center gap-3 glass-card continue-learning-card">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 premium-hover">
                           <FileText className="w-5 h-5 text-primary" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -916,7 +1079,7 @@ export function DashboardView() {
               </>
             ) : materials.length === 0 ? (
               /* First-time welcome */
-              <Card className="p-8 text-center border-dashed relative overflow-hidden glass-card">
+              <Card className="p-8 text-center border-dashed relative overflow-hidden glass-card welcome-card">
                 <div className="absolute inset-0 gradient-mesh opacity-30" />
                 <div className="relative z-10">
                   <CompanionAvatar icon={comp.icon} gradient={comp.gradient} size="xl" state="wave" className="mx-auto mb-4" />
@@ -925,10 +1088,10 @@ export function DashboardView() {
                     Upload your first document and I'll analyze it, assess your understanding, and guide you through personalized lessons.
                   </p>
                   <div className="flex gap-2 justify-center mt-5">
-                    <Button onClick={() => setView("learn")} className="bg-primary text-primary-foreground press">
+                    <Button onClick={() => setView("learn")} className="bg-primary text-primary-foreground press premium-btn">
                       <Plus className="w-4 h-4 mr-1" /> Upload material
                     </Button>
-                    <Button variant="outline" onClick={() => setView("tutor")} className="press">
+                    <Button variant="outline" onClick={() => setView("tutor")} className="press premium-btn-outline">
                       <Bot className="w-4 h-4 mr-1" /> Talk to {comp.name}
                     </Button>
                   </div>
@@ -946,9 +1109,9 @@ export function DashboardView() {
               onClick={() => setView("learn")}
               className="w-full press"
             >
-              <Card className="p-3.5 border-amber-500/20 bg-amber-500/[0.03] glass-card">
+              <Card className="p-3.5 border-amber-500/20 bg-amber-500/[0.03] glass-card nudge-card">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 premium-hover">
                     <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   </div>
                   <p className="text-xs flex-1 text-foreground/80"><span className="font-medium">{unanalyzed.length} {unanalyzed.length === 1 ? "document" : "documents"}</span> ready to analyze</p>
@@ -971,7 +1134,7 @@ export function DashboardView() {
                   <span className="text-[10px] text-muted-foreground">{journey.summary.activeDays} active {journey.summary.activeDays === 1 ? "day" : "days"}</span>
                 )}
               </div>
-              <Card className="p-4 glass-card">
+              <Card className="p-4 glass-card activity-card">
                 <div className="space-y-2.5">
                   {journey.timeline.slice(0, 4).map((event, i) => (
                     <ActivityRow key={event.id} event={event} isLast={i === Math.min(3, journey.timeline.length - 1)} />
@@ -985,14 +1148,14 @@ export function DashboardView() {
         {/* ===== RIGHT SIDEBAR — AI Companion, Calendar, Insights ===== */}
         <div className="space-y-6 hidden xl:block">
           {/* AI Companion */}
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden companion-card">
             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-sky-200 blur-3xl opacity-30 pointer-events-none" />
             <div className="relative flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Sparkles size={15} className="text-pink-400" />
                 <h3 className="font-semibold text-foreground text-sm">Your AI Companion</h3>
               </div>
-              <button className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80">
+              <button className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80 transition-all premium-hover-small">
                 <Plus size={13} />
               </button>
             </div>
@@ -1005,15 +1168,15 @@ export function DashboardView() {
               <p className="text-xs text-muted-foreground mt-3 italic">"{companionGreeting}"</p>
               <button
                 onClick={() => setView("tutor")}
-                className="mt-4 w-full flex items-center justify-center gap-2 bg-violet-600 text-white text-sm font-semibold py-2.5 rounded-full shadow-sm hover:bg-violet-700 hover:shadow-md hover:scale-105 transition-all dark:bg-violet-500 dark:text-white dark:hover:bg-violet-400"
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-violet-600 text-white text-sm font-semibold py-2.5 rounded-full shadow-sm hover:bg-violet-700 hover:shadow-md hover:scale-105 transition-all dark:bg-violet-500 dark:text-white dark:hover:bg-violet-400 premium-btn"
               >
                 Chat with {comp.name} <ArrowRight size={14} className="text-white" />
               </button>
             </div>
           </div>
 
-          {/* Study Calendar */}
-          <StudyCalendar />
+          {/* Study Calendar — now fully functional with real data */}
+          <StudyCalendar journey={journey} />
 
           {/* Learning Insights */}
           <LearningInsights />

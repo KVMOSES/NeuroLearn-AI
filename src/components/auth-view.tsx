@@ -230,6 +230,17 @@ export function AuthView() {
                   )}
                 </div>
 
+                {mode === "login" && (
+                  <div className="text-right -mt-1">
+                    <a
+                      href="/reset-password"
+                      className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   disabled={loading}

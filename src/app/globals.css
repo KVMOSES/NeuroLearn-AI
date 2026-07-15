@@ -755,3 +755,247 @@
       0 0 30px rgba(251,146,60,0.35);
     border-color: rgba(251,146,60,0.6);
   }
+
+  /* ====== PREMIUM HOVER ANIMATIONS ====== */
+  
+  /* Premium hover — subtle lift + scale + glow */
+  .premium-hover {
+    transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.28s ease,
+                border-color 0.28s ease;
+  }
+  .premium-hover:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 28px -6px rgba(0,0,0,0.08), 0 2px 8px -2px rgba(0,0,0,0.04);
+  }
+
+  /* Premium hover small — for icons and small elements */
+  .premium-hover-small {
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.25s ease;
+  }
+  .premium-hover-small:hover {
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.1);
+  }
+
+  /* Premium button — gradient with gloss reflection effect */
+  .premium-btn {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .premium-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255,255,255,0.15) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%) rotate(25deg);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+  .premium-btn:hover::after {
+    transform: translateX(100%) rotate(25deg);
+  }
+  .premium-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.15);
+  }
+  .premium-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Premium button outline — glass reflection */
+  .premium-btn-outline {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease,
+                background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .premium-btn-outline::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255,255,255,0.12) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%) rotate(25deg);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+  .premium-btn-outline:hover::after {
+    transform: translateX(100%) rotate(25deg);
+  }
+  .premium-btn-outline:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,0.1);
+    background-color: rgba(255,255,255,0.8);
+  }
+
+  /* Badge hover — subtle lift + glow */
+  .badge-hover {
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.25s ease;
+  }
+  .badge-hover:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.06);
+  }
+
+  /* Calendar nav button hover */
+  .cal-nav-btn {
+    transition: transform 0.25s ease, 
+                background-color 0.25s ease,
+                box-shadow 0.25s ease;
+  }
+  .cal-nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px -2px rgba(0,0,0,0.06);
+  }
+
+  /* Activity row hover */
+  .activity-row {
+    transition: transform 0.25s ease;
+  }
+  .activity-row:hover {
+    transform: translateX(3px);
+  }
+
+  /* ====== DASHBOARD SPECIFIC CARD HOVER OVERRIDES ====== */
+  /* These add extra lift and glass reflection over the base glass-card hover */
+
+  .stat-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+    cursor: default;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .calendar-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .calendar-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  .insights-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .insights-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .mission-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .mission-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  .companion-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .companion-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  .continue-learning-card {
+    transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.28s ease;
+  }
+  .continue-learning-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 12px 32px -8px color-mix(in oklch, var(--foreground) 7%, transparent),
+      0 2px 8px -2px color-mix(in oklch, var(--foreground) 4%, transparent);
+  }
+
+  .welcome-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .welcome-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  .nudge-card {
+    transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.28s ease;
+  }
+  .nudge-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    border-color: rgba(251, 146, 60, 0.4);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 12px 32px -8px color-mix(in oklch, var(--foreground) 7%, transparent);
+  }
+
+  .activity-card {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+  }
+  .activity-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 0 0 1px rgba(255,255,255,0.32),
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }
+
+  .hero-card {
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.35s ease;
+  }
+  .hero-card:hover {
+    transform: translateY(-4px) scale(1.005);
+    box-shadow:
+      0 22px 44px color-mix(in oklch, var(--foreground) 9%, transparent),
+      0 4px 12px color-mix(in oklch, var(--foreground) 5%, transparent);
+  }

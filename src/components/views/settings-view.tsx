@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   User, Mail, Shield, Bell, Palette, Globe, Lock, LogOut, Moon, Sun,
   Check, KeyRound, Smartphone, Database, Sparkles, Flame, Zap, Award,
-  Brain, TrendingUp, ChevronRight, Volume2,
+  Brain, TrendingUp, ChevronRight, Volume2, Pencil,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,12 +26,17 @@ import {
 } from "@/components/ui/dialog";
 
 export function SettingsView() {
-  const { me, logout } = useAppStore();
+  const { me, logout, loadMe } = useAppStore();
   const { theme, setTheme } = useTheme();
   const [name, setName] = useState(me?.user.name ?? "");
+  const [email, setEmail] = useState(me?.user.email ?? "");
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [newEmail, setNewEmail] = useState(me?.user.email ?? "");
+  const [emailPassword, setEmailPassword] = useState("");
+  const [emailSaving, setEmailSaving] = useState(false);
 
   if (!me) return null;
 
@@ -102,7 +107,21 @@ export function SettingsView() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-xs">Email</Label>
-            <Input id="email" value={me.user.email} disabled className="h-9 bg-muted/50" />
+            <div className="flex gap-2">
+              <Input id="email" value={email} disabled className="h-9 bg-muted/50 flex-1" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 shrink-0"
+                onClick={() => {
+                  setNewEmail(email);
+                  setEmailPassword("");
+                  setEmailModalOpen(true);
+                }}
+              >
+                <Pencil className="w-3 h-3 mr-1" /> Edit
+              </Button>
+            </div>
           </div>
         </div>
         <div className="space-y-1.5 mt-3">
@@ -297,6 +316,64 @@ export function SettingsView() {
           <LogOut className="w-3.5 h-3.5 mr-1" /> Sign out
         </Button>
       </div>
+
+      {/* Email edit dialog */}
+      <Dialog open={emailModalOpen} onOpenChange={setEmailModalOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Change Email Address</DialogTitle>
+            <DialogDescription>
+              Enter your new email and current password to confirm the change.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-email" className="text-xs">New email</Label>
+              <Input
+                id="new-email"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="h-9"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email-password" className="text-xs">Current password</Label>
+              <Input
+                id="email-password"
+                type="password"
+                value={emailPassword}
+                onChange={(e) => setEmailPassword(e.target.value)}
+                placeholder="Enter your current password"
+                className="h-9"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailModalOpen(false)}>Cancel</Button>
+            <Button
+              disabled={emailSaving || !newEmail || !emailPassword}
+              onClick={async () => {
+                setEmailSaving(true);
+                try {
+                  await api.post("/api/auth/update-email", { email: newEmail, currentPassword: emailPassword });
+                  setEmail(newEmail);
+                  toast.success("Email updated successfully ✉️");
+                  setEmailModalOpen(false);
+                  await loadMe();
+                } catch (err) {
+                  toast.error((err as Error).message || "Failed to update email");
+                } finally {
+                  setEmailSaving(false);
+                }
+              }}
+            >
+              {emailSaving ? "Saving…" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>

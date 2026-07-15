@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Timer, Play, Pause, RotateCcw, Coffee, Brain, Zap, Flame,
-  CheckCircle2, TrendingUp, Clock,
+  CheckCircle2, TrendingUp, Clock, Volume2, VolumeX, Settings,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Confetti } from "@/components/confetti";
 import { useAppStore } from "@/lib/store";
+import { playTimerSound, preloadAudio, setMasterVolume, getMasterVolume, setMuted, getMuted, startAmbient, stopAmbient, TIMER_SOUNDS, AMBIENT_SOUNDS } from "@/lib/audio";
 
 type Phase = "focus" | "break" | "idle";
 type Mode = "pomodoro" | "short" | "long";
@@ -30,16 +31,6 @@ interface FocusStats {
   sessionsByDay: { date: string; minutes: number }[];
 }
 
-const AMBIENCES = [
-  { key: "none", label: "None", icon: "🔇" },
-  { key: "rain", label: "Rain", icon: "🌧️" },
-  { key: "forest", label: "Forest", icon: "🌲" },
-  { key: "ocean", label: "Ocean", icon: "🌊" },
-  { key: "cafe", label: "Café", icon: "☕" },
-  { key: "lofi", label: "Lo-fi", icon: "🎵" },
-  { key: "whitenoise", label: "White Noise", icon: "📻" },
-];
-
 export function FocusView() {
   const { me } = useAppStore();
   const [mode, setMode] = useState<Mode>("pomodoro");
@@ -50,8 +41,11 @@ export function FocusView() {
   const [stats, setStats] = useState<FocusStats | null>(null);
   const [recording, setRecording] = useState(false);
   const [ambience, setAmbience] = useState("none");
-  const [volume, setVolume] = useState(0.3);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [volume, setVolume] = useState(getMasterVolume() * 100);
+  const [muted, setMutedState] = useState(getMuted());
+  const [selectedSound, setSelectedSound] = useState("chime");
+  const [showSettings, setShowSettings] = useState(false);
+  const [wasPaused, setWasPaused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadStats = useCallback(async () => {
@@ -69,12 +63,36 @@ export function FocusView() {
       .catch(() => {});
   }, []);
 
-  // Handle phase completion
+  // Use a ref to track if we're currently completing to prevent double-fires
+  const completingRef = useRef(false);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+  const soundRef = useRef(selectedSound);
+  soundRef.current = selectedSound;
+
+  // Handle phase completion — called when timer hits zero
   const handlePhaseComplete = useCallback(() => {
-    if (phase === "focus") {
+    if (completingRef.current) return; // prevent double-fire
+    completingRef.current = true;
+
+    // Clear the interval immediately to stop further ticks
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    const currentPhase = phaseRef.current;
+    const currentMode = modeRef.current;
+    const currentSound = soundRef.current;
+
+    if (currentPhase === "focus") {
+      // Play session complete sound
+      playTimerSound("session_complete", currentSound);
+      
       // Record the focus session
-      const minutes = MODES[mode].focus;
-      setRecording(true);
+      const minutes = MODES[currentMode].focus;
       api.post("/api/teaching/focus", { durationMinutes: minutes, type: "pomodoro" })
         .then((r: any) => {
           toast.success(`Focus session complete! +${r.xpEarned} XP 🎉`);
@@ -83,50 +101,84 @@ export function FocusView() {
           setCompletedSessions((c) => c + 1);
           loadStats();
         })
-        .catch(() => toast.error("Failed to record session"))
-        .finally(() => setRecording(false));
+        .catch(() => toast.error("Failed to record session"));
 
       // Switch to break
       setPhase("break");
-      setSecondsLeft(MODES[mode].break * 60);
-    } else if (phase === "break") {
+      setSecondsLeft(MODES[currentMode].break * 60);
+    } else if (currentPhase === "break") {
+      // Play break complete sound
+      playTimerSound("break_complete", currentSound);
+      
       // Break complete — ready for next focus
       setPhase("idle");
-      setSecondsLeft(MODES[mode].focus * 60);
+      setSecondsLeft(MODES[currentMode].focus * 60);
       toast.info("Break over — ready for the next session? 💪");
     }
-  }, [phase, mode, loadStats]);
+
+    completingRef.current = false;
+  }, [loadStats]);
 
   // Timer tick
   useEffect(() => {
-    if (phase === "idle") return;
+    if (phase === "idle") {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
     intervalRef.current = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          // Phase complete
-          handlePhaseComplete();
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          // Don't call handlePhaseComplete from inside setState callback
+          // Instead, schedule it after the state update
+          setTimeout(() => handlePhaseComplete(), 0);
           return 0;
         }
-        return s - 1;
+        return prev - 1;
       });
     }, 1000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [phase, handlePhaseComplete]);
+
+  // Stop ambient sound when component unmounts
+  useEffect(() => {
+    return () => {
+      stopAmbient();
+    };
+  }, []);
 
   function start() {
     if (phase === "idle") {
+      preloadAudio();
+      playTimerSound("start", selectedSound);
       setPhase("focus");
       setSecondsLeft(MODES[mode].focus * 60);
+      setWasPaused(false);
     }
   }
 
   function pause() {
+    playTimerSound("pause", selectedSound);
     setPhase("idle");
+    setWasPaused(true);
+  }
+
+  function resume() {
+    playTimerSound("resume", selectedSound);
+    setPhase("focus");
   }
 
   function reset() {
     setPhase("idle");
     setSecondsLeft(MODES[mode].focus * 60);
+    setWasPaused(false);
   }
 
   function switchMode(newMode: Mode) {
@@ -147,10 +199,102 @@ export function FocusView() {
       <Confetti show={showConfetti} />
       <div className="max-w-2xl mx-auto fade-in space-y-4">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Focus Timer</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Stay focused with the Pomodoro technique. Earn XP for every minute you study.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Focus Timer</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Stay focused with the Pomodoro technique. Earn XP for every minute you study.</p>
+          </div>
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-2 rounded-lg hover:bg-muted/60 transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <Settings size={18} />
+          </button>
         </div>
+
+        {/* Settings panel */}
+        <AnimatePresence>
+          {showSettings && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <Card className="p-4 space-y-3">
+                {/* Sound selection */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-muted-foreground">Timer Sound</span>
+                    <span className="text-xs text-muted-foreground">
+                      {selectedSound === "none" ? "Silent" : `Playing: ${TIMER_SOUNDS.find(s => s.key === selectedSound)?.label}`}
+                    </span>
+                  </div>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {TIMER_SOUNDS.map((s) => (
+                      <button
+                        key={s.key}
+                        onClick={() => { setSelectedSound(s.key); if (s.key !== "none") playTimerSound("start", s.key); }}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium transition-all ${
+                          selectedSound === s.key ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <span>{s.icon}</span>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Volume control */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-muted-foreground">Volume</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => {
+                          const newMuted = !muted;
+                          setMutedState(newMuted);
+                          setMuted(newMuted);
+                        }}
+                        className="p-1 rounded hover:bg-muted transition-colors"
+                      >
+                        {muted ? <VolumeX size={14} className="text-muted-foreground" /> : <Volume2 size={14} className="text-primary" />}
+                      </button>
+                      <span className="text-[11px] text-muted-foreground w-8 text-right">{Math.round(volume)}%</span>
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={volume}
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value);
+                      setVolume(v);
+                      const normal = v / 100;
+                      setMasterVolume(normal);
+                      if (muted && v > 0) {
+                        setMutedState(false);
+                        setMuted(false);
+                      }
+                    }}
+                    className="w-full h-1.5 rounded-full appearance-none bg-muted accent-primary cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 
+                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-sm
+                      [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:transition-transform"
+                  />
+                </div>
+
+                {/* Ambient sound hint */}
+                <div className="text-[10px] text-muted-foreground bg-muted/50 rounded-lg p-2">
+                  Timer sounds are separate from ambient sounds below. Each event (start, pause, resume, session complete, break complete) has its own unique sound.
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Mode selector */}
         <div className="flex gap-2">
@@ -211,13 +355,23 @@ export function FocusView() {
             {/* Controls */}
             <div className="flex items-center gap-3">
               {phase === "idle" ? (
-                <Button
-                  onClick={start}
-                  size="lg"
-                  className="bg-white text-primary hover:bg-white/90 h-12 px-8 text-base font-semibold scale-tap"
-                >
-                  <Play className="w-5 h-5 mr-2" /> Start focusing
-                </Button>
+                wasPaused ? (
+                  <Button
+                    onClick={resume}
+                    size="lg"
+                    className="bg-white text-primary hover:bg-white/90 h-12 px-8 text-base font-semibold scale-tap"
+                  >
+                    <Play className="w-5 h-5 mr-2" /> Resume
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={start}
+                    size="lg"
+                    className="bg-white text-primary hover:bg-white/90 h-12 px-8 text-base font-semibold scale-tap"
+                  >
+                    <Play className="w-5 h-5 mr-2" /> Start focusing
+                  </Button>
+                )
               ) : (
                 <Button
                   onClick={pause}
@@ -252,36 +406,19 @@ export function FocusView() {
           <div className="flex items-center gap-1.5 mb-2">
             <span className="text-xs font-semibold text-muted-foreground">Ambient Sound</span>
             {ambience !== "none" && (
-              <div className="flex items-center gap-1.5 ml-auto">
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={(e) => {
-                    const v = parseFloat(e.target.value);
-                    setVolume(v);
-                    if (audioRef.current) audioRef.current.volume = v;
-                  }}
-                  className="w-20 h-1 accent-primary"
-                />
-              </div>
+              <span className="text-[10px] text-muted-foreground ml-auto">{AMBIENT_SOUNDS.find(a => a.key === ambience)?.label}</span>
             )}
           </div>
           <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            {AMBIENCES.map((a) => (
+            {AMBIENT_SOUNDS.map((a) => (
               <button
                 key={a.key}
                 onClick={() => {
                   setAmbience(a.key);
-                  if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current = null;
-                  }
+                  stopAmbient();
                   if (a.key !== "none") {
-                    // Use Web Audio API to generate ambient noise
-                    playAmbientSound(a.key, volume);
+                    preloadAudio();
+                    startAmbient(a.key, getMasterVolume());
                   }
                 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium shrink-0 transition-all ${
@@ -390,96 +527,4 @@ export function FocusView() {
       </div>
     </>
   );
-}
-
-// Ambient sound generator using Web Audio API
-let ambientCtx: AudioContext | null = null;
-let ambientNodes: any[] = [];
-
-function playAmbientSound(type: string, volume: number) {
-  // Stop existing
-  stopAmbientSound();
-  if (typeof window === "undefined") return;
-
-  try {
-    ambientCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-  } catch { return; }
-
-  const masterGain = ambientCtx.createGain();
-  masterGain.gain.value = volume * 0.3;
-  masterGain.connect(ambientCtx.destination);
-
-  if (type === "rain" || type === "whitenoise") {
-    // White noise → filtered for rain/white noise
-    const bufferSize = 2 * ambientCtx.sampleRate;
-    const buffer = ambientCtx.createBuffer(1, bufferSize, ambientCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-    const source = ambientCtx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = ambientCtx.createBiquadFilter();
-    filter.type = type === "rain" ? "lowpass" : "allpass";
-    filter.frequency.value = type === "rain" ? 800 : 5000;
-    source.connect(filter);
-    filter.connect(masterGain);
-    source.start();
-    ambientNodes.push(source);
-  } else if (type === "ocean") {
-    // Low-frequency oscillation for ocean waves
-    const osc = ambientCtx.createOscillator();
-    osc.frequency.value = 0.1;
-    const gain = ambientCtx.createGain();
-    gain.gain.value = 0.5;
-    const lfo = ambientCtx.createOscillator();
-    lfo.frequency.value = 0.15;
-    const lfoGain = ambientCtx.createGain();
-    lfoGain.gain.value = 0.3;
-    lfo.connect(lfoGain);
-    lfoGain.connect(gain.gain);
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start();
-    lfo.start();
-    ambientNodes.push(osc, lfo);
-  } else if (type === "forest" || type === "cafe") {
-    // Brown noise with different filtering
-    const bufferSize = 2 * ambientCtx.sampleRate;
-    const buffer = ambientCtx.createBuffer(1, bufferSize, ambientCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let lastOut = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      data[i] = (lastOut + 0.02 * white) / 1.02;
-      lastOut = data[i];
-      data[i] *= 3.5;
-    }
-    const source = ambientCtx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = ambientCtx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = type === "forest" ? 400 : 600;
-    source.connect(filter);
-    filter.connect(masterGain);
-    source.start();
-    ambientNodes.push(source);
-  } else if (type === "lofi") {
-    // Simple low-frequency hum for lo-fi vibe
-    const osc = ambientCtx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.value = 220;
-    const gain = ambientCtx.createGain();
-    gain.gain.value = 0.15;
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start();
-    ambientNodes.push(osc);
-  }
-}
-
-function stopAmbientSound() {
-  ambientNodes.forEach((n) => { try { n.stop?.(); } catch {} });
-  ambientNodes = [];
-  if (ambientCtx) { try { ambientCtx.close(); } catch {} ambientCtx = null; }
 }
